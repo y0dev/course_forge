@@ -23,6 +23,25 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   const [exportComplete, setExportComplete] = useState(false);
   const [exportType, setExportType] = useState("html");
 
+  const formatHTMLContent = (content: string) => {
+    if (!content) return '';
+    
+    // Add newlines after closing tags for better readability
+    const formatted = content
+      // Add newlines after block-level closing tags
+      .replace(/\/(h[1-6]|p|div|section|article|header|footer|nav|aside|main|blockquote|ul|ol|li|table|tr|td|th|form|fieldset|legend|figure|figcaption)>/g, '/$1>\n')
+      // Add newlines after self-closing tags
+      .replace(/\/(br|hr|img|input|meta|link|area|base|col|embed|source|track|wbr)>/g, '/$1>\n')
+      // Add newlines before opening block tags
+      .replace(/(\n|^)<(h[1-6]|p|div|section|article|header|footer|nav|aside|main|blockquote|ul|ol|li|table|tr|td|th|form|fieldset|legend|figure|figcaption)/g, '\n<$2')
+      // Clean up multiple consecutive newlines
+      .replace(/\n{3,}/g, '\n\n')
+      // Trim leading/trailing whitespace
+      .trim();
+    
+    return formatted;
+  };
+
   const convertMarkdownToHTML = (markdown: string) => {
     let html = markdown || '';
 
@@ -76,6 +95,10 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   };
 
   const generateJSON = () => {
+    // Temporary debug log
+    console.log('Exporting course data:', courseData);
+    console.log('Steps in first lesson:', courseData.sections?.[0]?.lessons?.[0]?.steps);
+    
     const jsonData = {
       id: courseData.id || Date.now().toString(),
       title: courseData.title || "",
@@ -100,7 +123,10 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
           estimatedTime: lesson.estimatedTime || 15,
           difficulty: lesson.difficulty || "Beginner",
           progress: lesson.progress || 0,
-          steps: lesson.steps || [],
+          steps: lesson.steps?.map(step => ({
+            title: step.title || "",
+            content: step.content || ""
+          })) || [],
           content: lesson.content || ""
         })) || []
       })) || []
@@ -124,7 +150,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
           <div class="step-content">
             <h2>${step.title || ''}</h2>
             <div class="step-body">
-              ${step.content || ''}
+              ${formatHTMLContent(step.content || '')}
             </div>
           </div>
         `;
@@ -135,7 +161,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
           <div class="step-content" id="step-${index + 1}">
             <h2>Step ${index + 1}: ${step.title || ''}</h2>
             <div class="step-body">
-              ${step.content || ''}
+              ${formatHTMLContent(step.content || '')}
             </div>
           </div>
         `).join('');
@@ -407,7 +433,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
               <div class="step-content" id="step-${index + 1}">
                 <h3>Step ${index + 1}: ${step.title || ''}</h3>
                 <div class="step-body">
-                  ${step.content || ''}
+                  ${formatHTMLContent(step.content || '')}
                 </div>
               </div>
             `).join('');
@@ -625,26 +651,22 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   "sections": [
     {
       "id": "${courseData.sections?.[0]?.id || Date.now().toString()}",
-      "title": "Section Title",
-      "slug": "section-slug",
+      "title": "${courseData.sections?.[0]?.title || 'Section Title'}",
+      "slug": "${courseData.sections?.[0]?.slug || 'section-slug'}",
       "lessons": [
         {
-          "id": "${courseData.sections?.[0]?.lessons?.[0]?.id || Date.now().toString()}",
-          "title": "Lesson Title",
-          "slug": "lesson-slug",
+          "title": "${courseData.sections?.[0]?.lessons?.[0]?.title || 'Lesson Title'}",
+          "slug": "${courseData.sections?.[0]?.lessons?.[0]?.slug || 'lesson-slug'}",
           "course": "${courseData.title || 'Course Title'}",
-          "estimatedTime": 15,
-          "difficulty": "Beginner",
-          "progress": 0,
+          "estimatedTime": ${courseData.sections?.[0]?.lessons?.[0]?.estimatedTime || 15},
+          "difficulty": "${courseData.sections?.[0]?.lessons?.[0]?.difficulty || 'Beginner'}",
+          "progress": ${courseData.sections?.[0]?.lessons?.[0]?.progress || 0},
           "steps": [
             {
-              "title": "Step Title",
-              "content": "Step content..."
+              "title": "${courseData.sections?.[0]?.lessons?.[0]?.steps?.[0]?.title || 'Step Title'}",
+              "content": "${courseData.sections?.[0]?.lessons?.[0]?.steps?.[0]?.content || '<h3>Step content...</h3>'}"
             }
-          ],
-          "content": "Lesson content...",
-          "createdAt": "${new Date().toISOString()}",
-          "updatedAt": "${new Date().toISOString()}"
+          ]
         }
       ]
     }

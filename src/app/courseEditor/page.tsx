@@ -219,6 +219,21 @@ export default function CourseEditor() {
     }
   };
 
+  const handleExport = async () => {
+    // Refresh course data from localStorage before exporting to ensure we have the latest data
+    if (courseId) {
+      try {
+        const freshCourseData = await Course.getById(courseId);
+        if (freshCourseData) {
+          setCourseData(freshCourseData);
+        }
+      } catch (error) {
+        console.error('Error refreshing course data:', error);
+      }
+    }
+    setShowExportDialog(true);
+  };
+
   const addSampleLesson = () => {
     const sampleLesson = createEndiannessLesson(courseData.title || "Course");
     if (targetSectionId) {
@@ -246,7 +261,7 @@ export default function CourseEditor() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => setShowExportDialog(true)}
+                onClick={handleExport}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export
@@ -317,7 +332,7 @@ export default function CourseEditor() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => setShowExportDialog(true)}
+              onClick={handleExport}
               disabled={!courseData.title}
             >
               <Download className="w-4 h-4 mr-2" />

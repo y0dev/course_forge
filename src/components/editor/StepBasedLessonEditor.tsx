@@ -109,7 +109,7 @@ export default function StepBasedLessonEditor({
   const addStep = () => {
     const newStep: LessonStep = {
       title: "New Step",
-      content: "<h3>New Step Content</h3><p>Add your content here...</p>"
+      content: `<h3>Step Content</h3><p>Add your content here...</p>`
     };
     const updatedSteps = [...lesson.steps, newStep];
     updateLesson({ steps: updatedSteps });
