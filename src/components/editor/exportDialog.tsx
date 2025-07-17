@@ -8,18 +8,27 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Loader2, Check } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Download, FileText, Loader2, Check, Code2, Archive } from "lucide-react";
+import { Course } from "@/entities/Course";
 
-export default function ExportDialog({ open, onClose, courseData }) {
+interface ExportDialogProps {
+  open: boolean;
+  onClose: () => void;
+  courseData: Partial<Course>;
+}
+
+export default function ExportDialog({ open, onClose, courseData }: ExportDialogProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
+  const [exportType, setExportType] = useState("html");
 
-  const convertMarkdownToHTML = (markdown) => {
+  const convertMarkdownToHTML = (markdown: string) => {
     let html = markdown || '';
 
     // Block elements
     html = html
-      .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+      .replace(/```(\w+)?\n([\s\S]*?)```/g, (match: string, lang: string, code: string) => {
         const language = lang || 'plaintext';
         return `
 <div class="code-block-container">
@@ -42,10 +51,10 @@ export default function ExportDialog({ open, onClose, courseData }) {
       .replace(/^\s*\n\*/gm, '\n*') // Fix list spacing
       .replace(/^\s*\n-/gm, '\n-')
       .replace(/^\s*\n\d\./gm, '\n1.')
-      .replace(/^( *)\d+\. (.*)/gm, (s) => `${s}\n`)
-      .replace(/^( *)[*+-] (.*)/gm, (s) => `${s}\n`)
-      .replace(/((\n( {2,4}|\t)[*+-] .*)+)/g, (m) => `<ul>${m}</ul>`)
-      .replace(/((\n\d+\. .*)+)/g, (m) => `<ol>${m}</ol>`)
+      .replace(/^( *)\d+\. (.*)/gm, (s: string) => `${s}\n`)
+      .replace(/^( *)[*+-] (.*)/gm, (s: string) => `${s}\n`)
+      .replace(/((\n( {2,4}|\t)[*+-] .*)+)/g, (m: string) => `<ul>${m}</ul>`)
+      .replace(/((\n\d+\. .*)+)/g, (m: string) => `<ol>${m}</ol>`)
       .replace(/\n([*+-] |\d+\. )/g, '<li>')
       .replace(/<\/li>\n/g, '</li>');
 
@@ -66,39 +75,229 @@ export default function ExportDialog({ open, onClose, courseData }) {
     return html;
   };
 
+  const generateJSON = () => {
+    const jsonData = {
+      id: courseData.id || Date.now().toString(),
+      title: courseData.title || "",
+      slug: courseData.slug || "",
+      description: courseData.description || "",
+      category: courseData.category || "Beginner",
+      author: courseData.author || "",
+      tags: courseData.tags || [],
+      template: courseData.template || "academic",
+      customCSS: courseData.customCSS || "",
+      createdAt: courseData.createdAt || new Date().toISOString(),
+      updatedAt: courseData.updatedAt || new Date().toISOString(),
+      sections: courseData.sections?.map(section => ({
+        id: section.id || Date.now().toString(),
+        title: section.title || "",
+        slug: section.slug || "",
+        lessons: section.lessons?.map(lesson => ({
+          id: lesson.id || Date.now().toString(),
+          title: lesson.title || "",
+          slug: lesson.slug || "",
+          course: lesson.course || courseData.title,
+          estimatedTime: lesson.estimatedTime || 15,
+          difficulty: lesson.difficulty || "Beginner",
+          progress: lesson.progress || 0,
+          steps: lesson.steps || [],
+          content: lesson.content || ""
+        })) || []
+      })) || []
+    };
+
+    return JSON.stringify(jsonData, null, 2);
+  };
+
+  const generateStepBasedHTML = (lesson: {title?: string, content?: string, steps?: Array<{title?: string, content?: string}>, id?: string, slug?: string, estimatedTime?: number}, stepIndex: number | null = null) => {
+    const styles = getTemplateStyles(courseData.template || "academic");
+    const script = getTemplateScript();
+    
+    let content = '';
+    let title = lesson.title || '';
+    
+    if (lesson.steps && lesson.steps.length > 0) {
+      if (stepIndex !== null) {
+        // Single step page
+        const step = lesson.steps[stepIndex];
+        content = `
+          <div class="step-content">
+            <h2>${step.title || ''}</h2>
+            <div class="step-body">
+              ${step.content || ''}
+            </div>
+          </div>
+        `;
+        title = `${lesson.title || ''} - Step ${stepIndex + 1}: ${step.title || ''}`;
+      } else {
+        // All steps in one page
+        content = lesson.steps.map((step: {title?: string, content?: string}, index: number) => `
+          <div class="step-content" id="step-${index + 1}">
+            <h2>Step ${index + 1}: ${step.title || ''}</h2>
+            <div class="step-body">
+              ${step.content || ''}
+            </div>
+          </div>
+        `).join('');
+      }
+    } else {
+      // Legacy markdown content
+      content = `
+        <div class="lesson-body">
+          ${convertMarkdownToHTML(lesson.content || '')}
+        </div>
+      `;
+    }
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="course-title" content="${courseData.title || ''}">
+    <title>${title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>${styles}</style>
+</head>
+<body>
+    <div class="course-layout">
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <h2 class="site-title">${courseData.title || ''}</h2>
+                <nav class="course-navigation">
+                    <h3 class="nav-title">Course Content</h3>
+                    <div class="section">
+                        <ul class="lesson-list">
+                            <li><a href="index.html" class="lesson-link">Course Home</a></li>
+                        </ul>
+                    </div>
+                    ${courseData.sections?.map(section => `
+                      <div class="section">
+                        <h3 class="section-title">${section.title || ''}</h3>
+                        <ul class="lesson-list">
+                          ${section.lessons?.map(l => `
+                            <li class="lesson-item">
+                              <a href="${l.slug || ''}.html" class="lesson-link ${l.id === lesson.id ? 'active' : ''}">
+                                <span>${l.title || ''}</span>
+                                <span class="lesson-time">${l.estimatedTime || 15}m</span>
+                              </a>
+                            </li>
+                          `).join('') || ''}
+                        </ul>
+                      </div>
+                    `).join('') || ''}
+                </nav>
+            </div>
+        </aside>
+
+        <div class="main-content-container" id="main-content">
+            <main class="main-content">
+                <h1>${lesson.title || ''}</h1>
+                ${content}
+            </main>
+        </div>
+    </div>
+    <script>${script}</script>
+</body>
+</html>`;
+  };
+
+  const generateIndexHTML = () => {
+    const styles = getTemplateStyles(courseData.template || "academic");
+    const script = getTemplateScript();
+    
+    const navigationHTML = courseData.sections?.map(section => `
+      <div class="section">
+        <h3 class="section-title">${section.title || ''}</h3>
+        <ul class="lesson-list">
+          ${section.lessons?.map(lesson => `
+            <li class="lesson-item">
+              <a href="${lesson.slug || ''}.html" class="lesson-link">
+                <span>${lesson.title || ''}</span>
+                <span class="lesson-time">${lesson.estimatedTime || 15}m</span>
+              </a>
+            </li>
+          `).join('') || ''}
+        </ul>
+      </div>
+    `).join('') || '';
+
+    return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="course-title" content="${courseData.title || ''}">
+    <title>${courseData.title || ''}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>${styles}</style>
+</head>
+<body>
+    <div class="course-layout">
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <h2 class="site-title">${courseData.title || ''}</h2>
+                <nav class="course-navigation">
+                    <h3 class="nav-title">Course Content</h3>
+                    <div class="section">
+                        <ul class="lesson-list">
+                            <li><a href="index.html" class="lesson-link active">Course Home</a></li>
+                        </ul>
+                    </div>
+                    ${navigationHTML}
+                </nav>
+            </div>
+        </aside>
+
+        <div class="main-content-container" id="main-content">
+            <main class="main-content">
+                <div id="course-home">
+                    <h1>${courseData.title || ''}</h1>
+                    ${courseData.description ? `<p class="course-description">${courseData.description}</p>` : ''}
+                    <h2>Welcome!</h2>
+                    <p>Select a lesson from the sidebar to begin.</p>
+                    
+                    <div class="course-stats">
+                        <div class="stat-grid">
+                            <div class="stat-item">
+                                <h3>${courseData.sections?.length || 0}</h3>
+                                <p>Sections</p>
+                            </div>
+                            <div class="stat-item">
+                                <h3>${courseData.sections?.reduce((total, section) => total + (section.lessons?.length || 0), 0) || 0}</h3>
+                                <p>Lessons</p>
+                            </div>
+                            <div class="stat-item">
+                                <h3>${courseData.sections?.reduce((total, section) => 
+                                  total + section.lessons?.reduce((lessonTotal, lesson) => 
+                                    lessonTotal + (lesson.estimatedTime || 15), 0
+                                  ) || 0, 0
+                                ) || 0}m</h3>
+                                <p>Total Time</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>${script}</script>
+</body>
+</html>`;
+  };
+
+  const createZIP = async (files: Array<{name: string, content: string}>) => {
+    // For now, we'll create individual files since ZIP creation requires additional libraries
+    // In a real implementation, you'd use a library like JSZip
+    return files;
+  };
+
   const getTemplateScript = () => `
     document.addEventListener('DOMContentLoaded', function() {
-        const mainContent = document.getElementById('main-content');
-        const courseHome = document.getElementById('course-home');
-        const lessonContents = document.querySelectorAll('.lesson-content-wrapper');
-
-        function showContent(hash) {
-            lessonContents.forEach(el => el.style.display = 'none');
-            
-            if (!hash || hash === '#home') {
-                courseHome.style.display = 'block';
-                document.title = document.querySelector('meta[name="course-title"]').content;
-            } else {
-                courseHome.style.display = 'none';
-                const targetId = hash.substring(1);
-                const targetElement = document.getElementById(targetId);
-                if (targetElement) {
-                    targetElement.style.display = 'block';
-                    document.title = targetElement.querySelector('h1').textContent;
-                    
-                    document.querySelectorAll('.lesson-link').forEach(l => l.classList.remove('active'));
-                    const activeLink = document.querySelector('a[href="' + hash + '"]');
-                    if(activeLink) activeLink.classList.add('active');
-                }
-            }
-            mainContent.scrollTop = 0;
-        }
-
-        window.addEventListener('hashchange', () => showContent(window.location.hash));
-        showContent(window.location.hash);
-
         // Copy button functionality
-        mainContent.addEventListener('click', function(e) {
+        document.addEventListener('click', function(e) {
             if (e.target.classList.contains('copy-btn')) {
                 const pre = e.target.closest('.code-block-container').querySelector('pre');
                 const code = pre.innerText;
@@ -113,9 +312,8 @@ export default function ExportDialog({ open, onClose, courseData }) {
     });
   `;
 
-  const getTemplateStyles = (template) => {
-    // Shared base styles for structure and custom elements
-    const baseStyles = \`
+  const getTemplateStyles = (template: string) => {
+    const baseStyles = `
       :root { --primary-color: #1e293b; --secondary-color: #475569; --accent-color: #3b82f6; --bg-color: #f8fafc; --card-bg: #ffffff; --text-color: #334155; --border-color: #e2e8f0; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: var(--text-color); background-color: var(--bg-color); transition: background-color 0.3s; animation: fadeIn 0.5s ease-in-out; }
@@ -142,6 +340,16 @@ export default function ExportDialog({ open, onClose, courseData }) {
       strong { font-weight: 600; }
       em { font-style: italic; }
 
+      .step-content { margin: 2rem 0; padding: 2rem; background: var(--card-bg); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+      .step-content h2 { border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; }
+      .step-body { margin-top: 1rem; }
+
+      .course-stats { margin: 3rem 0; }
+      .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 2rem; }
+      .stat-item { text-align: center; padding: 1.5rem; background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+      .stat-item h3 { font-size: 2rem; font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem; }
+      .stat-item p { color: var(--secondary-color); font-weight: 500; }
+
       /* Custom UI Elements */
       .styled-link { color: var(--accent-color); text-decoration: none; font-weight: 500; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
       .styled-link:hover { border-bottom-color: var(--accent-color); }
@@ -166,22 +374,22 @@ export default function ExportDialog({ open, onClose, courseData }) {
 
       ul, ol { padding-left: 2rem; margin: 1rem 0; }
       li { margin-bottom: 0.5rem; }
-    \`;
+    `;
     return baseStyles;
   };
   
   const generateSPAHTML = () => {
-    const styles = getTemplateStyles(courseData.template);
+    const styles = getTemplateStyles(courseData.template || "academic");
     const script = getTemplateScript();
     
     const navigationHTML = courseData.sections?.map(section => `
       <div class="section">
-        <h3 class="section-title">${section.title}</h3>
+        <h3 class="section-title">${section.title || ''}</h3>
         <ul class="lesson-list">
           ${section.lessons?.map(lesson => `
             <li class="lesson-item">
-              <a href="#${lesson.slug}" class="lesson-link">
-                <span>${lesson.title}</span>
+              <a href="#${lesson.slug || ''}" class="lesson-link">
+                <span>${lesson.title || ''}</span>
                 <span class="lesson-time">${lesson.estimatedTime || 15}m</span>
               </a>
             </li>
@@ -191,14 +399,33 @@ export default function ExportDialog({ open, onClose, courseData }) {
     `).join('') || '';
 
     const lessonsContentHTML = courseData.sections?.flatMap(section => 
-        section.lessons?.map(lesson => `
-          <div id="${lesson.slug}" class="lesson-content-wrapper" style="display:none;">
-            <h1>${lesson.title}</h1>
-            <div class="lesson-body">
-              ${convertMarkdownToHTML(lesson.content)}
+        section.lessons?.map(lesson => {
+          let lessonContent = '';
+          
+          if (lesson.steps && lesson.steps.length > 0) {
+            lessonContent = lesson.steps.map((step, index) => `
+              <div class="step-content" id="step-${index + 1}">
+                <h3>Step ${index + 1}: ${step.title || ''}</h3>
+                <div class="step-body">
+                  ${step.content || ''}
+                </div>
+              </div>
+            `).join('');
+          } else {
+            lessonContent = `
+              <div class="lesson-body">
+                ${convertMarkdownToHTML(lesson.content || '')}
+              </div>
+            `;
+          }
+          
+          return `
+            <div id="${lesson.slug || ''}" class="lesson-content-wrapper" style="display:none;">
+              <h1>${lesson.title || ''}</h1>
+              ${lessonContent}
             </div>
-          </div>
-        `) || []
+          `;
+        }) || []
     ).join('');
 
     return `
@@ -207,8 +434,8 @@ export default function ExportDialog({ open, onClose, courseData }) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="course-title" content="${courseData.title}">
-    <title>${courseData.title}</title>
+    <meta name="course-title" content="${courseData.title || ''}">
+    <title>${courseData.title || ''}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>${styles}</style>
 </head>
@@ -216,7 +443,7 @@ export default function ExportDialog({ open, onClose, courseData }) {
     <div class="course-layout">
         <aside class="sidebar">
             <div class="sidebar-content">
-                <h2 class="site-title">${courseData.title}</h2>
+                <h2 class="site-title">${courseData.title || ''}</h2>
                 <nav class="course-navigation">
                     <h3 class="nav-title">Course Content</h3>
                     <div class="section">
@@ -232,7 +459,7 @@ export default function ExportDialog({ open, onClose, courseData }) {
         <div class="main-content-container" id="main-content">
             <main class="main-content">
                 <div id="course-home" style="display:block;">
-                    <h1>${courseData.title}</h1>
+                    <h1>${courseData.title || ''}</h1>
                     ${courseData.description ? `<p class="course-description">${courseData.description}</p>` : ''}
                     <h2>Welcome!</h2>
                     <p>Select a lesson from the sidebar to begin.</p>
@@ -251,16 +478,56 @@ export default function ExportDialog({ open, onClose, courseData }) {
     
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      const html = generateSPAHTML();
-      const blob = new Blob([html], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${courseData.slug || 'course'}.html`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      
+      if (exportType === "html") {
+        // Generate multi-page HTML files
+        const files = [];
+        
+        // Add index.html
+        files.push({
+          name: 'index.html',
+          content: generateIndexHTML()
+        });
+        
+        // Add lesson files
+        courseData.sections?.forEach(section => {
+          section.lessons?.forEach(lesson => {
+            files.push({
+              name: `${lesson.slug}.html`,
+              content: generateStepBasedHTML(lesson)
+            });
+          });
+        });
+        
+        // For now, download the index.html file
+        // In a real implementation, you'd create a ZIP with all files
+        const blob = new Blob([files[0].content], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${courseData.slug || 'course'}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Show message about multi-page export
+        alert(`Generated ${files.length} HTML files. Currently downloading index.html. For full multi-page export, consider using a ZIP library.`);
+        
+      } else {
+        // JSON export
+        const content = generateJSON();
+        const filename = `${courseData.slug || 'course'}.json`;
+        const blob = new Blob([content], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
       
       setExportComplete(true);
       setTimeout(() => {
@@ -276,30 +543,118 @@ export default function ExportDialog({ open, onClose, courseData }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Export Course to HTML</DialogTitle>
+          <DialogTitle>Export Course</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6">
           <Card>
             <CardContent className="p-4">
               <h3 className="font-semibold mb-2">{courseData.title || "Untitled Course"}</h3>
-              <p className="text-sm text-slate-600">
-                This will generate a single, self-contained HTML file that acts like a multi-page website.
-              </p>
+              <div className="flex items-center gap-2 mb-2">
+                <Badge>{courseData.category}</Badge>
+                <Badge variant="outline">
+                  {courseData.sections?.reduce((total, section) => 
+                    total + (section.lessons?.length || 0), 0) || 0} lessons
+                </Badge>
+              </div>
             </CardContent>
           </Card>
 
-          <div className="space-y-4">
-            <h4 className="font-medium">New Features in this Export:</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Multi-page navigation experience</li>
-              <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Code blocks with a "Copy" button</li>
-              <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Enhanced styling for tables, images, and lists</li>
-              <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-500" /> Smooth animations and transitions</li>
-            </ul>
-          </div>
+          <Tabs value={exportType} onValueChange={setExportType}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="html" className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Static Website
+              </TabsTrigger>
+              <TabsTrigger value="json" className="flex items-center gap-2">
+                <Code2 className="w-4 h-4" />
+                JSON Data
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="html" className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">Static Website Export</h4>
+                <p className="text-sm text-slate-600 mb-4">
+                  Generate a single, self-contained HTML file that acts like a multi-page website.
+                </p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    Multi-page navigation experience
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    Code blocks with copy functionality
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    Enhanced styling for tables, images, and lists
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-500" />
+                    Smooth animations and transitions
+                  </li>
+                </ul>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="json" className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">JSON Data Export</h4>
+                <p className="text-sm text-slate-600 mb-4">
+                  Export your course data as structured JSON for integration with other systems.
+                </p>
+                <div className="bg-slate-50 p-4 rounded-lg">
+                  <h5 className="font-medium text-sm mb-2">Preview:</h5>
+                  <pre className="text-xs text-slate-600 overflow-x-auto">
+{`{
+  "id": "${courseData.id || Date.now().toString()}",
+  "title": "${courseData.title || 'Course Title'}",
+  "slug": "${courseData.slug || 'course-slug'}",
+  "description": "${courseData.description || 'Course description'}",
+  "category": "${courseData.category || 'Beginner'}",
+  "author": "${courseData.author || ''}",
+  "tags": ${JSON.stringify(courseData.tags || [])},
+  "template": "${courseData.template || 'academic'}",
+  "customCSS": "${courseData.customCSS || ''}",
+  "createdAt": "${courseData.createdAt || new Date().toISOString()}",
+  "updatedAt": "${courseData.updatedAt || new Date().toISOString()}",
+  "sections": [
+    {
+      "id": "${courseData.sections?.[0]?.id || Date.now().toString()}",
+      "title": "Section Title",
+      "slug": "section-slug",
+      "lessons": [
+        {
+          "id": "${courseData.sections?.[0]?.lessons?.[0]?.id || Date.now().toString()}",
+          "title": "Lesson Title",
+          "slug": "lesson-slug",
+          "course": "${courseData.title || 'Course Title'}",
+          "estimatedTime": 15,
+          "difficulty": "Beginner",
+          "progress": 0,
+          "steps": [
+            {
+              "title": "Step Title",
+              "content": "Step content..."
+            }
+          ],
+          "content": "Lesson content...",
+          "createdAt": "${new Date().toISOString()}",
+          "updatedAt": "${new Date().toISOString()}"
+        }
+      ]
+    }
+  ]
+}`}
+                  </pre>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
 
           <div className="flex justify-end gap-3">
             <Button variant="outline" onClick={onClose} disabled={isExporting}>
@@ -314,11 +669,13 @@ export default function ExportDialog({ open, onClose, courseData }) {
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : exportComplete ? (
                 <Check className="w-4 h-4" />
+              ) : exportType === "html" ? (
+                <Archive className="w-4 h-4" />
               ) : (
-                <Download className="w-4 h-4" />
+                <Code2 className="w-4 h-4" />
               )}
               <span className="ml-2">
-                {isExporting ? 'Generating...' : exportComplete ? 'Done!' : 'Export'}
+                {isExporting ? 'Generating...' : exportComplete ? 'Done!' : `Export ${exportType.toUpperCase()}`}
               </span>
             </Button>
           </div>

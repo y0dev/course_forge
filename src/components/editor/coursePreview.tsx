@@ -14,11 +14,32 @@ import {
 import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function CoursePreview({ courseData }) {
+interface CoursePreviewProps {
+  courseData: any;
+}
+
+export default function CoursePreview({ courseData }: CoursePreviewProps) {
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [expandedSections, setExpandedSections] = useState(new Set());
 
-  const toggleSection = (sectionId) => {
+  // Early return if courseData is undefined
+  if (!courseData) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="text-center py-12">
+          <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-slate-600 mb-2">
+            No course data available
+          </h2>
+          <p className="text-slate-500">
+            Please create or load a course to preview.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
     if (newExpanded.has(sectionId)) {
       newExpanded.delete(sectionId);
@@ -28,7 +49,7 @@ export default function CoursePreview({ courseData }) {
     setExpandedSections(newExpanded);
   };
 
-  const formatTime = (minutes) => {
+  const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0) {
@@ -38,13 +59,13 @@ export default function CoursePreview({ courseData }) {
   };
 
   const getTotalTime = () => {
-    return courseData.sections?.reduce((total, section) => 
-      total + (section.lessons?.reduce((sectionTotal, lesson) => 
+    return courseData.sections?.reduce((total: number, section: any) => 
+      total + (section.lessons?.reduce((sectionTotal: number, lesson: any) => 
         sectionTotal + (lesson.estimatedTime || 0), 0) || 0), 0) || 0;
   };
 
   const getTotalLessons = () => {
-    return courseData.sections?.reduce((total, section) => 
+    return courseData.sections?.reduce((total: number, section: any) => 
       total + (section.lessons?.length || 0), 0) || 0;
   };
 
@@ -72,7 +93,7 @@ export default function CoursePreview({ courseData }) {
                   <Badge className={categoryColors[courseData.category]}>
                     {courseData.category}
                   </Badge>
-                  {courseData.tags?.map((tag, index) => (
+                  {courseData.tags?.map((tag: string, index: number) => (
                     <Badge key={index} variant="outline">
                       {tag}
                     </Badge>
@@ -99,7 +120,7 @@ export default function CoursePreview({ courseData }) {
               {/* Course Structure */}
               <div className="space-y-2">
                 <h3 className="font-semibold text-slate-900 mb-3">Course Content</h3>
-                {courseData.sections?.map((section, index) => (
+                {courseData.sections?.map((section: any, index: number) => (
                   <div key={section.id} className="border border-slate-200 rounded-lg">
                     <button
                       onClick={() => toggleSection(section.id)}
@@ -126,7 +147,7 @@ export default function CoursePreview({ courseData }) {
                           className="overflow-hidden"
                         >
                           <div className="border-t border-slate-200">
-                            {section.lessons?.map((lesson, lessonIndex) => (
+                            {section.lessons?.map((lesson: any, lessonIndex: number) => (
                               <button
                                 key={lesson.id}
                                 onClick={() => setSelectedLesson(lesson)}

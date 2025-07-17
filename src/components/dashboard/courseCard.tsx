@@ -10,7 +10,7 @@ import {
   MoreHorizontal,
   Eye
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import {
@@ -69,7 +69,7 @@ export default function CourseCard({ course, totalLessons, estimatedTime, onRefr
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link to={createPageUrl("CourseEditor") + `?id=${course.id}`}>
+                  <Link href={`/courseEditor?id=${course.id}`}>
                     <Edit3 className="w-4 h-4 mr-2" />
                     Edit Course
                   </Link>
@@ -105,7 +105,7 @@ export default function CourseCard({ course, totalLessons, estimatedTime, onRefr
             </div>
           </div>
           <div className="flex gap-2">
-            <Link to={createPageUrl("CourseEditor") + `?id=${course.id}`} className="flex-1">
+            <Link href={`/courseEditor?id=${course.id}`}>
               <Button variant="outline" size="sm" className="w-full">
                 <Edit3 className="w-4 h-4 mr-2" />
                 Edit

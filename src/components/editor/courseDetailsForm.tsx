@@ -9,10 +9,31 @@ import { Button } from "@/components/ui/button";
 import { X, Plus } from "lucide-react";
 import { useState } from "react";
 
-export default function CourseDetailsForm({ courseData, onChange }) {
+interface CourseDetailsFormProps {
+  courseData: any;
+  onChange: (data: any) => void;
+}
+
+export default function CourseDetailsForm({ courseData, onChange }: CourseDetailsFormProps) {
   const [newTag, setNewTag] = useState("");
 
-  const generateSlug = (title) => {
+  // Early return if courseData is undefined
+  if (!courseData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Course Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <p className="text-slate-500">No course data available</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const generateSlug = (title: string) => {
     return title
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
@@ -20,7 +41,7 @@ export default function CourseDetailsForm({ courseData, onChange }) {
       .trim();
   };
 
-  const handleTitleChange = (title) => {
+  const handleTitleChange = (title: string) => {
     const slug = generateSlug(title);
     onChange({ ...courseData, title, slug });
   };
@@ -35,10 +56,10 @@ export default function CourseDetailsForm({ courseData, onChange }) {
     }
   };
 
-  const removeTag = (tagToRemove) => {
+  const removeTag = (tagToRemove: string) => {
     onChange({
       ...courseData,
-      tags: courseData.tags.filter(tag => tag !== tagToRemove)
+      tags: courseData.tags.filter((tag: string) => tag !== tagToRemove)
     });
   };
 
@@ -114,7 +135,7 @@ export default function CourseDetailsForm({ courseData, onChange }) {
         <div className="space-y-2">
           <Label>Tags</Label>
           <div className="flex flex-wrap gap-2 mb-3">
-            {courseData.tags.map((tag, index) => (
+            {courseData.tags.map((tag: string, index: number) => (
               <Badge key={index} variant="secondary" className="flex items-center gap-1">
                 {tag}
                 <Button

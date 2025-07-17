@@ -9,7 +9,9 @@ import {
   Edit3, 
   GripVertical, 
   FileText,
-  Clock
+  Clock,
+  Eye,
+  Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -19,16 +21,28 @@ import {
 } from "@/components/ui/collapsible";
 import { useState } from "react";
 
+interface SectionEditorProps {
+  sections: any[];
+  onUpdateSection: (sectionId: string, updates: any) => void;
+  onDeleteSection: (sectionId: string) => void;
+  onSelectLesson: (lesson: any, sectionId: string) => void;
+  onUpdateLesson: (sectionId: string, lessonId: string, updates: any) => void;
+  onEditLesson?: (lesson: any, sectionId: string) => void;
+  onPreviewLesson?: (lesson: any) => void;
+}
+
 export default function SectionEditor({ 
   sections, 
   onUpdateSection, 
   onDeleteSection, 
   onSelectLesson,
-  onUpdateLesson 
-}) {
+  onUpdateLesson,
+  onEditLesson,
+  onPreviewLesson
+}: SectionEditorProps) {
   const [expandedSections, setExpandedSections] = useState(new Set());
 
-  const toggleSection = (sectionId) => {
+  const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
     if (newExpanded.has(sectionId)) {
       newExpanded.delete(sectionId);
@@ -38,7 +52,7 @@ export default function SectionEditor({
     setExpandedSections(newExpanded);
   };
 
-  const generateSlug = (title) => {
+  const generateSlug = (title: string) => {
     return title
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
@@ -46,35 +60,32 @@ export default function SectionEditor({
       .trim();
   };
 
-  const addLesson = (sectionId) => {
+  const addLesson = (sectionId: string) => {
+    // This will be handled by the parent component to show the lesson creator
+    onSelectLesson({ id: 'new', title: 'New Lesson' }, sectionId);
+  };
+
+  const deleteLesson = (sectionId: string, lessonId: string) => {
     const section = sections.find(s => s.id === sectionId);
-    const newLesson = {
-      id: Date.now().toString(),
-      title: "New Lesson",
-      slug: `lesson-${Date.now()}`,
-      content: "# New Lesson\n\nAdd your content here...",
-      estimatedTime: 15
-    };
-    
     onUpdateSection(sectionId, {
-      lessons: [...(section.lessons || []), newLesson]
+      lessons: section.lessons.filter((lesson: any) => lesson.id !== lessonId)
     });
   };
 
-  const deleteLesson = (sectionId, lessonId) => {
-    const section = sections.find(s => s.id === sectionId);
-    onUpdateSection(sectionId, {
-      lessons: section.lessons.filter(lesson => lesson.id !== lessonId)
-    });
-  };
-
-  const formatTime = (minutes) => {
+  const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0) {
       return `${hours}h ${mins}m`;
     }
     return `${mins}m`;
+  };
+
+  const getLessonType = (lesson: any) => {
+    if (lesson.steps && lesson.steps.length > 0) {
+      return "Step-based";
+    }
+    return "Markdown";
   };
 
   if (sections.length === 0) {
@@ -197,6 +208,14 @@ export default function SectionEditor({
                                       <Clock className="w-3 h-3 mr-1" />
                                       {lesson.estimatedTime || 15}m
                                     </Badge>
+                                    <Badge variant="secondary" className="text-xs">
+                                      {getLessonType(lesson)}
+                                    </Badge>
+                                    {lesson.difficulty && (
+                                      <Badge variant="outline" className="text-xs">
+                                        {lesson.difficulty}
+                                      </Badge>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -204,17 +223,36 @@ export default function SectionEditor({
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => onSelectLesson({ 
-                                    ...lesson, 
-                                    sectionId: section.id 
-                                  })}
+                                  onClick={() => onSelectLesson(lesson, section.id)}
+                                  title="Open in Content Editor"
                                 >
-                                  <Edit3 className="w-4 h-4" />
+                                  <Play className="w-4 h-4" />
                                 </Button>
+                                {onEditLesson && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => onEditLesson(lesson, section.id)}
+                                    title="Edit Lesson"
+                                  >
+                                    <Edit3 className="w-4 h-4" />
+                                  </Button>
+                                )}
+                                {onPreviewLesson && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => onPreviewLesson(lesson)}
+                                    title="Preview Lesson"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                )}
                                 <Button
                                   size="sm"
                                   variant="ghost"
                                   onClick={() => deleteLesson(section.id, lesson.id)}
+                                  title="Delete Lesson"
                                 >
                                   <Trash2 className="w-4 h-4 text-red-500" />
                                 </Button>

@@ -5,7 +5,7 @@ import { Course } from "@/entities/Course";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { createPageUrl } from "@/utils";
 import { 
   BookOpen, 
@@ -21,11 +21,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 
-import StatsOverview from "../components/dashboard/StatsOverview";
-import CourseCard from "../components/dashboard/CourseCard";
+import StatsOverview from "@/components/dashboard/statsOverview";
+import CourseCard from "@/components/dashboard/courseCard";
 
 export default function Dashboard() {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -45,20 +45,20 @@ export default function Dashboard() {
     setIsLoading(false);
   };
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = courses.filter((course: any) => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          course.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const getTotalLessons = (course) => {
-    return course.sections?.reduce((total, section) => total + (section.lessons?.length || 0), 0) || 0;
+  const getTotalLessons = (course: any) => {
+    return course.sections?.reduce((total: number, section: any) => total + (section.lessons?.length || 0), 0) || 0;
   };
 
-  const getEstimatedTime = (course) => {
-    return course.sections?.reduce((total, section) => 
-      total + (section.lessons?.reduce((sectionTotal, lesson) => 
+  const getEstimatedTime = (course: any) => {
+    return course.sections?.reduce((total: number, section: any) => 
+      total + (section.lessons?.reduce((sectionTotal: number, lesson: any) => 
         sectionTotal + (lesson.estimatedTime || 0), 0) || 0), 0) || 0;
   };
 
@@ -70,7 +70,7 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Course Dashboard</h1>
           <p className="text-slate-600">Manage and create educational content</p>
         </div>
-        <Link to={createPageUrl("CourseEditor")}>
+        <Link href="/courseEditor">
           <Button className="bg-slate-800 hover:bg-slate-700 text-white shadow-lg">
             <Plus className="w-5 h-5 mr-2" />
             Create New Course
@@ -156,7 +156,7 @@ export default function Dashboard() {
                 }
               </p>
               {!searchTerm && selectedCategory === "all" && (
-                <Link to={createPageUrl("CourseEditor")}>
+                <Link href="/courseEditor">
                   <Button className="bg-slate-800 hover:bg-slate-700">
                     <Plus className="w-5 h-5 mr-2" />
                     Create Your First Course
