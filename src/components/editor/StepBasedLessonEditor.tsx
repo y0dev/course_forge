@@ -24,6 +24,7 @@ import {
   Quote
 } from "lucide-react";
 import { Lesson, LessonStep } from "@/entities/Course";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 interface StepBasedLessonEditorProps {
   selectedLesson: Lesson | null;
@@ -47,6 +48,32 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
     { icon: ListOrdered, label: "OL", format: "ol", placeholder: "Ordered list" },
     { icon: Quote, label: "Quote", format: "blockquote", placeholder: "Quote" },
     { icon: Link, label: "Link", format: "a", placeholder: "Link text" },
+    { icon: Type, label: "Table", format: "table", placeholder: "Table" },
+    // Remove the old Div button, replace with dropdown below
+  ];
+
+  // Div design options
+  const divDesigns = [
+    {
+      label: "Gray",
+      value: "div-gray",
+      html: '<div class="bg-gray-100 p-4 rounded-lg my-4">Div content</div>'
+    },
+    {
+      label: "Red Alert",
+      value: "div-red",
+      html: '<div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 my-4">Div content</div>'
+    },
+    {
+      label: "Amber Alert",
+      value: "div-amber",
+      html: '<div class="bg-amber-50 p-4 rounded-lg border-l-4 border-amber-500">Div content</div>'
+    },
+    {
+      label: "Green Alert",
+      value: "div-green",
+      html: '<div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">Div content</div>'
+    }
   ];
 
   return (
@@ -67,6 +94,24 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
           </Button>
         );
       })}
+      {/* Div dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Insert Div">
+            <Type className="w-3 h-3 mr-1" />Div
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          {divDesigns.map((design) => (
+            <DropdownMenuItem
+              key={design.value}
+              onClick={() => onFormat("div", design.html)}
+            >
+              {design.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
@@ -185,12 +230,27 @@ export default function StepBasedLessonEditor({
         newCursorPos = start + 4 + (selectedText || placeholder || 'Italic text').length + 5;
         break;
       case 'ul':
-        newContent = currentContent.substring(0, start) + `<ul>\n  <li>${selectedText || placeholder || 'List item'}</li>\n</ul>` + currentContent.substring(end);
-        newCursorPos = start + 7 + (selectedText || placeholder || 'List item').length + 9;
+        newContent = currentContent.substring(0, start) + `<ul class="mt-2 space-y-1">\n  <li>${selectedText || placeholder || 'List item'}</li>\n</ul>` + currentContent.substring(end);
+        newCursorPos = start + 31 + (selectedText || placeholder || 'List item').length + 9;
         break;
       case 'ol':
-        newContent = currentContent.substring(0, start) + `<ol>\n  <li>${selectedText || placeholder || 'List item'}</li>\n</ol>` + currentContent.substring(end);
-        newCursorPos = start + 7 + (selectedText || placeholder || 'List item').length + 9;
+        newContent = currentContent.substring(0, start) + `<ol class="mt-2 space-y-1">\n  <li>${selectedText || placeholder || 'List item'}</li>\n</ol>` + currentContent.substring(end);
+        newCursorPos = start + 31 + (selectedText || placeholder || 'List item').length + 9;
+        break;
+      case 'table':
+        newContent = currentContent.substring(0, start) + `<div class="bg-gray-100 p-4 rounded-lg my-4">\n  <h4>Same Example: Storing 0x12345678</h4>\n  <table class="w-full mt-2">\n    <tr class="bg-green-100">\n      <th class="p-2 border">Memory Address</th>\n      <th class="p-2 border">0x1000</th>\n      <th class="p-2 border">0x1001</th>\n      <th class="p-2 border">0x1002</th>\n      <th class="p-2 border">0x1003</th>\n    </tr>\n    <tr>\n      <td class="p-2 border font-bold">Byte Value</td>\n      <td class="p-2 border text-center">0x78</td>\n      <td class="p-2 border text-center">0x56</td>\n      <td class="p-2 border text-center">0x34</td>\n      <td class="p-2 border text-center">0x12</td>\n    </tr>\n  </table>\n</div>` + currentContent.substring(end);
+        newCursorPos = start + 0; // Place cursor at start of inserted block
+        break;
+      case 'div':
+        // If placeholder is a full HTML string, use it directly, otherwise fallback to gray div
+        let divHtml = placeholder || '<div class="bg-gray-100 p-4 rounded-lg my-4">Div content</div>';
+        // If user selected text, replace 'Div content' with it
+        if (selectedText) {
+          divHtml = divHtml.replace('Div content', selectedText);
+        }
+        newContent = currentContent.substring(0, start) + divHtml + currentContent.substring(end);
+        // Try to place cursor after the inserted div
+        newCursorPos = start + divHtml.length;
         break;
       case 'blockquote':
         newContent = currentContent.substring(0, start) + `<blockquote>${selectedText || placeholder || 'Quote'}</blockquote>` + currentContent.substring(end);
