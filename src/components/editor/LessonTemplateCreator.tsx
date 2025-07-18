@@ -18,6 +18,7 @@ import {
 import { Lesson, LessonStep } from "@/entities/Course";
 // FormattingToolbar from StepBasedLessonEditor
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { generateDemoHtml } from "@/components/editor/demoTemplates";
 
 interface FormattingToolbarProps {
   onFormat: (format: string, placeholder?: string) => void;
@@ -30,7 +31,7 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
     { icon: Code2, label: "Quote", format: "blockquote", placeholder: "Quote" },
     { icon: Code2, label: "Link", format: "a", placeholder: "Link text" },
     { icon: Code2, label: "Table", format: "table", placeholder: "Table" },
-    { icon: Code2, label: "Demo", format: "demo", placeholder: "Interactive Demo" },
+    // Demo dropdown will be added below
     { icon: Code2, label: "BR", format: "br", placeholder: "" },
     // Div dropdown below
   ];
@@ -75,6 +76,70 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
     { label: "Bash", value: "bash", placeholder: "echo 'Hello, world!'" },
     { label: "JSON", value: "json", placeholder: "{ \"message\": \"Hello, world!\" }" },
     { label: "Other", value: "plaintext", placeholder: "code here" },
+  ];
+  
+  // Demo options for embedded engineering
+  const demoOptions = [
+    { 
+      label: "Memory Visualization", 
+      value: "memory-viz", 
+      title: "Memory Visualization Tool",
+      description: "Interactive memory layout and endianness demonstration"
+    },
+    { 
+      label: "GPIO Control", 
+      value: "gpio-control", 
+      title: "GPIO Pin Control Simulator",
+      description: "Simulate GPIO pin states and configurations"
+    },
+    { 
+      label: "UART Communication", 
+      value: "uart-comm", 
+      title: "UART Communication Simulator",
+      description: "Interactive UART data transmission visualization"
+    },
+    { 
+      label: "Interrupt Handler", 
+      value: "interrupt-handler", 
+      title: "Interrupt Handler Simulator",
+      description: "Visualize interrupt processing and priority handling"
+    },
+    { 
+      label: "Timer Configuration", 
+      value: "timer-config", 
+      title: "Timer Configuration Tool",
+      description: "Configure and visualize timer settings"
+    },
+    { 
+      label: "ADC Reading", 
+      value: "adc-reading", 
+      title: "ADC Reading Simulator",
+      description: "Simulate analog-to-digital conversion readings"
+    },
+    { 
+      label: "PWM Generator", 
+      value: "pwm-generator", 
+      title: "PWM Signal Generator",
+      description: "Generate and visualize PWM signals"
+    },
+    { 
+      label: "I2C Communication", 
+      value: "i2c-comm", 
+      title: "I2C Communication Simulator",
+      description: "Interactive I2C master-slave communication"
+    },
+    { 
+      label: "SPI Communication", 
+      value: "spi-comm", 
+      title: "SPI Communication Simulator",
+      description: "Visualize SPI data transfer and clock signals"
+    },
+    { 
+      label: "Watchdog Timer", 
+      value: "watchdog-timer", 
+      title: "Watchdog Timer Simulator",
+      description: "Simulate watchdog timer behavior and resets"
+    }
   ];
   const divDesigns = [
     {
@@ -151,6 +216,28 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
               className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
             >
               {option.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {/* Demo dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Insert Interactive Demo">
+            <Code2 className="w-3 h-3 mr-1" />Demo
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg max-w-md">
+          {demoOptions.map((demo) => (
+            <DropdownMenuItem
+              key={demo.value}
+              onClick={() => onFormat("demo", JSON.stringify(demo))}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors p-3"
+            >
+              <div className="flex flex-col">
+                <span className="font-medium">{demo.label}</span>
+                <span className="text-xs text-slate-600 mt-1">{demo.description}</span>
+              </div>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -292,7 +379,7 @@ export default function LessonTemplateCreator({
   const addStep = () => {
     const newStep: LessonStep = {
       title: "New Step",
-      content: `<h3>Step Content</h3><p>Add your content here...</p>`
+      content: `<h1>Step Content</h1><p>Add your content here...</p>`
     };
     const updatedSteps = [...(lesson.steps || []), newStep];
     updateLesson({ steps: updatedSteps });
@@ -341,6 +428,8 @@ export default function LessonTemplateCreator({
   };
 
   const canSave = lesson.title && lesson.steps && lesson.steps.length > 0;
+
+
 
   function handleFormat(format: string, placeholder?: string) {
     if (!textareaRef.current || activeStepIndex < 0 || !lesson.steps || activeStepIndex >= lesson.steps.length) {
@@ -415,56 +504,21 @@ export default function LessonTemplateCreator({
         newCursorPos = start + 9 + (selectedText || placeholder || 'Link text').length + 4;
         break;
       case 'demo':
-        const demoHtml = `
-<div class="rounded-xl border border-[var(--gray)] bg-[var(--white)] text-[var(--primary)] shadow-sm mb-6 border-blue-200 bg-blue-50">
-  <div class="flex flex-col space-y-1.5 p-6">
-    <h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2 text-blue-900">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu w-5 h-5" aria-hidden="true">
-        <path d="M12 20v2"></path>
-        <path d="M12 2v2"></path>
-        <path d="M17 20v2"></path>
-        <path d="M17 2v2"></path>
-        <path d="M2 12h2"></path>
-        <path d="M2 17h2"></path>
-        <path d="M2 7h2"></path>
-        <path d="M20 12h2"></path>
-        <path d="M20 17h2"></path>
-        <path d="M20 7h2"></path>
-        <path d="M7 20v2"></path>
-        <path d="M7 2v2"></path>
-        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-        <rect x="8" y="8" width="8" height="8" rx="1"></rect>
-      </svg>
-      Interactive Demo
-    </h3>
-  </div>
-  <div class="p-6 pt-4">
-    <div class="bg-white p-4 rounded-lg">
-      <h4 class="font-semibold mb-3">Memory Visualization Tool</h4>
-      <div class="grid grid-cols-4 gap-2 mb-4">
-        <div class="text-center">
-          <div class="text-xs text-slate-600 mb-1">0x1000</div>
-          <div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x78</div>
-        </div>
-        <div class="text-center">
-          <div class="text-xs text-slate-600 mb-1">0x1001</div>
-          <div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x56</div>
-        </div>
-        <div class="text-center">
-          <div class="text-xs text-slate-600 mb-1">0x1002</div>
-          <div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x34</div>
-        </div>
-        <div class="text-center">
-          <div class="text-xs text-slate-600 mb-1">0x1003</div>
-          <div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x12</div>
-        </div>
-      </div>
-      <p class="text-sm text-slate-600">
-        <strong>Little-Endian view:</strong> 0x12345678 stored in memory
-      </p>
-    </div>
-  </div>
-</div>`;
+        // placeholder param is a stringified demo object
+        let demoConfig = { 
+          value: 'memory-viz', 
+          label: 'Memory Visualization', 
+          title: 'Memory Visualization Tool',
+          description: 'Interactive memory layout and endianness demonstration'
+        };
+        try {
+          if (placeholder) demoConfig = JSON.parse(placeholder);
+        } catch {}
+        
+        const demoHtml = generateDemoHtml(demoConfig);
+        newContent = currentContent.substring(0, start) + demoHtml + currentContent.substring(end);
+        newCursorPos = start + 0;
+        break;
         newContent = currentContent.substring(0, start) + demoHtml + currentContent.substring(end);
         newCursorPos = start + 0;
         break;
