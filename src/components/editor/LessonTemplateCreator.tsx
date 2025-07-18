@@ -20,6 +20,45 @@ import { Lesson, LessonStep } from "@/entities/Course";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { generateDemoHtml } from "@/components/editor/demoTemplates";
 
+export const codeListBlocks = [
+  {
+    label: "Blue Code List",
+    value: "blue-codelist",
+    html: `<div class="bg-blue-50 p-4 rounded-lg">
+  <h4 class="font-bold text-blue-800 mb-2">🔧 Key Functions:</h4>
+  <ul class="text-blue-700 text-sm space-y-1">
+    <li><code>gpio_init()</code> - Initialize GPIO system</li>
+    <li><code>gpio_set_direction()</code> - Configure pin mode</li>
+    <li><code>gpio_write()</code> - Set pin HIGH/LOW</li>
+  </ul>
+</div>`
+  },
+  {
+    label: "Green Code List",
+    value: "green-codelist",
+    html: `<div class="bg-green-50 p-4 rounded-lg">
+  <h4 class="font-bold text-green-800 mb-2">🔧 Key Functions:</h4>
+  <ul class="text-green-700 text-sm space-y-1">
+    <li><code>adc_init()</code> - Initialize ADC</li>
+    <li><code>adc_read()</code> - Read analog value</li>
+    <li><code>adc_disable()</code> - Disable ADC</li>
+  </ul>
+</div>`
+  },
+  {
+    label: "Purple Code List",
+    value: "purple-codelist",
+    html: `<div class="bg-purple-50 p-4 rounded-lg">
+  <h4 class="font-bold text-purple-800 mb-2">🔧 Key Functions:</h4>
+  <ul class="text-purple-700 text-sm space-y-1">
+    <li><code>uart_init()</code> - Initialize UART</li>
+    <li><code>uart_send()</code> - Send data</li>
+    <li><code>uart_receive()</code> - Receive data</li>
+  </ul>
+</div>`
+  }
+];
+
 interface FormattingToolbarProps {
   onFormat: (format: string, placeholder?: string) => void;
 }
@@ -198,6 +237,12 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
       value: "watchdog-timer", 
       title: "Watchdog Timer Simulator",
       description: "Simulate watchdog timer behavior and resets"
+    },
+    { 
+      label: "Interactive Code Simulator", 
+      value: "code-sim-demo", 
+      title: "Interactive Code Simulator",
+      description: "Simulate GPIO pin and code execution"
     }
   ];
   const divDesigns = [
@@ -650,6 +695,25 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+      {/* Code List dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Insert Code List">
+            <Code2 className="w-3 h-3 mr-1" />Code List
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
+          {codeListBlocks.map((block: { label: string; value: string; html: string }) => (
+            <DropdownMenuItem
+              key={block.value}
+              onClick={() => onFormat("codelist", block.html)}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            >
+              {block.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
@@ -1055,6 +1119,25 @@ export default function LessonTemplateCreator({
           }
         }
         newContent = currentContent.substring(0, start) + coloredBulletsHtml + currentContent.substring(end);
+        newCursorPos = start + 0;
+        break;
+      case 'codelist':
+        let codeListHtml = placeholder || codeListBlocks[0].html;
+        if (selectedText) {
+          // Each line becomes a code item
+          const lines = selectedText.split('\n').filter(line => line.trim());
+          if (lines.length > 0) {
+            // Pick color from placeholder html
+            const colorMatch = codeListHtml.match(/bg-(\w+)-50/);
+            const color = colorMatch ? colorMatch[1] : 'blue';
+            const textColor = color === 'blue' ? 'text-blue-700' : color === 'green' ? 'text-green-700' : 'text-purple-700';
+            const h4Color = color === 'blue' ? 'text-blue-800' : color === 'green' ? 'text-green-800' : 'text-purple-800';
+            const blockBg = `bg-${color}-50`;
+            const listItems = lines.map(line => `<li><code>${line.trim().split(' ')[0]}</code> - ${line.trim().split(' ').slice(1).join(' ')}</li>`).join('\n');
+            codeListHtml = `<div class="${blockBg} p-4 rounded-lg">\n  <h4 class="${h4Color} mb-2">🔧 Key Functions:</h4>\n  <ul class="${textColor} text-sm space-y-1">\n    ${listItems}\n  </ul>\n</div>`;
+          }
+        }
+        newContent = currentContent.substring(0, start) + codeListHtml + currentContent.substring(end);
         newCursorPos = start + 0;
         break;
       default:
