@@ -14,7 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 import CourseDetailsForm from "@/components/editor/courseDetailsForm";
 import SectionEditor from "@/components/editor/sectionEditor";
 import MarkdownEditor from "@/components/editor/markdownEditor";
-import StepBasedLessonEditor from "@/components/editor/StepBasedLessonEditor";
 import StepBasedLessonPreview from "@/components/editor/StepBasedLessonPreview";
 import LessonTemplateCreator from "@/components/editor/LessonTemplateCreator";
 import CoursePreview from "@/components/editor/coursePreview";
@@ -28,7 +27,7 @@ export default function CourseEditor() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [courseData, setCourseData] = useState<Partial<Course>>({
+  const [courseData, setCourseData] = useState<Partial<CourseType>>({
     title: "",
     slug: "",
     description: "",
@@ -400,9 +399,8 @@ export default function CourseEditor() {
           <TabsContent value="content">
             {selectedLesson ? (
               selectedLesson.steps && selectedLesson.steps.length > 0 ? (
-                <StepBasedLessonEditor
-                  selectedLesson={selectedLesson}
-                  onUpdateLesson={onUpdateLesson}
+                <StepBasedLessonPreview
+                  lesson={selectedLesson}
                 />
               ) : (
                 <MarkdownEditor

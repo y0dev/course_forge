@@ -27,14 +27,14 @@ export interface Course {
   title: string;
   slug: string;
   description: string;
+  estimatedCourseTime: number;
   category: "Beginner" | "Intermediate" | "Advanced";
   author: string;
   tags: string[];
   sections: Section[];
-  template: "academic" | "modern" | "minimal";
-  customCSS: string;
   createdAt: string;
   updatedAt: string;
+  isFree: boolean;
 }
 
 class CourseService {
@@ -84,12 +84,12 @@ class CourseService {
       title: courseData.title || "",
       slug: courseData.slug || "",
       description: courseData.description || "",
+      estimatedCourseTime: courseData.estimatedCourseTime || 15,
       category: courseData.category || "Beginner",
-      author: courseData.author || "",
+      author: courseData.author || "Anonymous",
       tags: courseData.tags || [],
       sections: courseData.sections || [],
-      template: courseData.template || "academic",
-      customCSS: courseData.customCSS || "",
+      isFree: courseData.isFree || true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

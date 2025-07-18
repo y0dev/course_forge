@@ -25,12 +25,7 @@ interface FormattingToolbarProps {
 
 function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
   const formatButtons = [
-    { icon: Code2, label: "H1", format: "h1", placeholder: "Heading 1" },
-    { icon: Code2, label: "H2", format: "h2", placeholder: "Heading 2" },
-    { icon: Code2, label: "H3", format: "h3", placeholder: "Heading 3" },
     { icon: Code2, label: "P", format: "p", placeholder: "Paragraph" },
-    { icon: Code2, label: "Bold", format: "strong", placeholder: "Bold text" },
-    { icon: Code2, label: "Italic", format: "em", placeholder: "Italic text" },
     // List Block dropdown will be added below
     { icon: Code2, label: "Quote", format: "blockquote", placeholder: "Quote" },
     { icon: Code2, label: "Link", format: "a", placeholder: "Link text" },
@@ -39,10 +34,24 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
     { icon: Code2, label: "BR", format: "br", placeholder: "" },
     // Div dropdown below
   ];
+  // Text formatting options
+  const textFormatOptions = [
+    { label: "Bold", format: "strong", placeholder: "Bold text" },
+    { label: "Italic", format: "em", placeholder: "Italic text" },
+    { label: "Underline", format: "u", placeholder: "Underlined text" },
+  ];
+  // Header options
+  const headerOptions = [
+    { label: "Heading 1", format: "h1", placeholder: "Heading 1" },
+    { label: "Heading 2", format: "h2", placeholder: "Heading 2" },
+    { label: "Heading 3", format: "h3", placeholder: "Heading 3" },
+  ];
   // List block color options
   const listBlockColors = [
-    { label: "Blue", value: "blue-50", title: "Big-Endian Storage:", ulClass: "mt-2 space-y-1" },
-    { label: "Green", value: "green-50", title: "Little-Endian Storage:", ulClass: "mt-2 space-y-1" },
+    { label: "Blue Unordered", value: "blue-50", title: "Big-Endian Storage:", ulClass: "mt-2 space-y-1", type: "ul" },
+    { label: "Green Unordered", value: "green-50", title: "Little-Endian Storage:", ulClass: "mt-2 space-y-1", type: "ul" },
+    { label: "Blue Ordered", value: "blue-50", title: "Step-by-Step Process:", olClass: "mt-2 space-y-1 list-decimal list-inside", type: "ol" },
+    { label: "Green Ordered", value: "green-50", title: "Implementation Steps:", olClass: "mt-2 space-y-1 list-decimal list-inside", type: "ol" },
   ];
   // More tags for dropdown
   const moreTags = [
@@ -91,6 +100,26 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
   ];
   return (
     <div className="flex flex-wrap gap-1 p-2 bg-slate-50 border border-slate-200 rounded-md mb-2">
+      
+      {/* Headers dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Headers">
+            <Code2 className="w-3 h-3 mr-1" />Headers
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
+          {headerOptions.map((option) => (
+            <DropdownMenuItem
+              key={option.format}
+              onClick={() => onFormat(option.format, option.placeholder)}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            >
+              {option.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       {formatButtons.map((button) => {
         const Icon = button.icon;
         return (
@@ -106,7 +135,26 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
             {button.label}
           </Button>
         );
-      })}
+      })}   
+      {/* Text Formatting dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Text Formatting">
+            <Code2 className="w-3 h-3 mr-1" />Text
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
+          {textFormatOptions.map((option) => (
+            <DropdownMenuItem
+              key={option.format}
+              onClick={() => onFormat(option.format, option.placeholder)}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            >
+              {option.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       {/* Code dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -114,11 +162,12 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
             <Code2 className="w-3 h-3 mr-1" />Code
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
           {codeLanguages.map((lang) => (
             <DropdownMenuItem
               key={lang.value}
               onClick={() => onFormat("codeblock", JSON.stringify(lang))}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
             >
               {lang.label}
             </DropdownMenuItem>
@@ -131,11 +180,12 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
             <Code2 className="w-3 h-3 mr-1" />Div
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
           {divDesigns.map((design) => (
             <DropdownMenuItem
               key={design.value}
               onClick={() => onFormat("div", design.html)}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
             >
               {design.label}
             </DropdownMenuItem>
@@ -149,15 +199,23 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
             <Code2 className="w-3 h-3 mr-1" />List Block
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
           {listBlockColors.map((color) => (
             <DropdownMenuItem
-              key={color.value}
+              key={`${color.value}-${color.type}`}
               onClick={async () => {
                 let title = prompt(`Enter list block title:`, color.title);
                 if (!title) title = color.title;
-                onFormat("listblock", JSON.stringify({ color: color.value, title, ulClass: color.ulClass }));
+                const config = {
+                  color: color.value,
+                  title,
+                  type: color.type,
+                  ulClass: color.ulClass,
+                  olClass: color.olClass
+                };
+                onFormat("listblock", JSON.stringify(config));
               }}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
             >
               {color.label}
             </DropdownMenuItem>
@@ -171,11 +229,12 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
             <Code2 className="w-3 h-3 mr-1" />More
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
           {moreTags.map((tag) => (
             <DropdownMenuItem
               key={tag.format}
               onClick={() => onFormat(tag.format, tag.placeholder)}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
             >
               {tag.label}
             </DropdownMenuItem>
@@ -321,12 +380,17 @@ export default function LessonTemplateCreator({
         break;
       case 'listblock':
         // placeholder param is a stringified color/title object
-        let listBlock = { color: 'blue-50', title: 'List', ulClass: 'mt-2 space-y-1' };
+        let listBlock = { color: 'blue-50', title: 'List', type: 'ul', ulClass: 'mt-2 space-y-1', olClass: 'mt-2 space-y-1 list-decimal list-inside' };
         try {
           if (placeholder) listBlock = JSON.parse(placeholder);
         } catch {}
+        
+        const listItems = listBlock.type === 'ol' 
+          ? `<ol class="${listBlock.olClass}">\n    <li>Step 1</li>\n    <li>Step 2</li>\n    <li>Step 3</li>\n  </ol>`
+          : `<ul class="${listBlock.ulClass}">\n    <li>Item 1</li>\n    <li>Item 2</li>\n    <li>Item 3</li>\n  </ul>`;
+          
         newContent = currentContent.substring(0, start) +
-          `<div class="bg-${listBlock.color} p-4 rounded-lg">\n  <h4 class="font-bold">${listBlock.title}</h4>\n  <ul class="${listBlock.ulClass}">\n    <li>Item 1</li>\n    <li>Item 2</li>\n    <li>Item 3</li>\n  </ul>\n</div>`
+          `<div class="bg-${listBlock.color} p-4 rounded-lg border border-${listBlock.color.replace('-50', '-200')}">\n  <h4 class="font-bold text-${listBlock.color.replace('-50', '-900')} mb-2">${listBlock.title}</h4>\n  ${listItems}\n</div>`
           + currentContent.substring(end);
         newCursorPos = start + 0;
         break;
@@ -351,7 +415,57 @@ export default function LessonTemplateCreator({
         newCursorPos = start + 9 + (selectedText || placeholder || 'Link text').length + 4;
         break;
       case 'demo':
-        newContent = currentContent.substring(0, start) + `<div class="flex flex-col space-y-1.5 p-6"><h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2 text-blue-900"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu w-5 h-5" aria-hidden="true"><path d="M12 20v2"></path><path d="M12 2v2"></path><path d="M17 20v2"></path><path d="M17 2v2"></path><path d="M2 12h2"></path><path d="M2 17h2"></path><path d="M2 7h2"></path><path d="M20 12h2"></path><path d="M20 17h2"></path><path d="M20 7h2"></path><path d="M7 20v2"></path><path d="M7 2v2"></path><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg>Interactive Demo</h3></div><div class="p-6 pt-4"><div class="bg-white p-4 rounded-lg"><h4 class="font-semibold mb-3">Memory Visualization Tool</h4><div class="grid grid-cols-4 gap-2 mb-4"><div class="text-center"><div class="text-xs text-slate-600 mb-1">0x1000</div><div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x78</div></div><div class="text-center"><div class="text-xs text-slate-600 mb-1">0x1001</div><div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x56</div></div><div class="text-center"><div class="text-xs text-slate-600 mb-1">0x1002</div><div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x34</div></div><div class="text-center"><div class="text-xs text-slate-600 mb-1">0x1003</div><div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x12</div></div></div><p class="text-sm text-slate-600"><strong>Little-Endian view:</strong> 0x12345678 stored in memory</p></div></div>` + currentContent.substring(end);
+        const demoHtml = `
+<div class="rounded-xl border border-[var(--gray)] bg-[var(--white)] text-[var(--primary)] shadow-sm mb-6 border-blue-200 bg-blue-50">
+  <div class="flex flex-col space-y-1.5 p-6">
+    <h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2 text-blue-900">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu w-5 h-5" aria-hidden="true">
+        <path d="M12 20v2"></path>
+        <path d="M12 2v2"></path>
+        <path d="M17 20v2"></path>
+        <path d="M17 2v2"></path>
+        <path d="M2 12h2"></path>
+        <path d="M2 17h2"></path>
+        <path d="M2 7h2"></path>
+        <path d="M20 12h2"></path>
+        <path d="M20 17h2"></path>
+        <path d="M20 7h2"></path>
+        <path d="M7 20v2"></path>
+        <path d="M7 2v2"></path>
+        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+        <rect x="8" y="8" width="8" height="8" rx="1"></rect>
+      </svg>
+      Interactive Demo
+    </h3>
+  </div>
+  <div class="p-6 pt-4">
+    <div class="bg-white p-4 rounded-lg">
+      <h4 class="font-semibold mb-3">Memory Visualization Tool</h4>
+      <div class="grid grid-cols-4 gap-2 mb-4">
+        <div class="text-center">
+          <div class="text-xs text-slate-600 mb-1">0x1000</div>
+          <div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x78</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xs text-slate-600 mb-1">0x1001</div>
+          <div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x56</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xs text-slate-600 mb-1">0x1002</div>
+          <div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x34</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xs text-slate-600 mb-1">0x1003</div>
+          <div class="bg-green-100 border-2 border-green-300 rounded p-2 font-mono">0x12</div>
+        </div>
+      </div>
+      <p class="text-sm text-slate-600">
+        <strong>Little-Endian view:</strong> 0x12345678 stored in memory
+      </p>
+    </div>
+  </div>
+</div>`;
+        newContent = currentContent.substring(0, start) + demoHtml + currentContent.substring(end);
         newCursorPos = start + 0;
         break;
       case 'codeblock':
@@ -408,6 +522,10 @@ export default function LessonTemplateCreator({
       case 'abbr':
         newContent = currentContent.substring(0, start) + `<abbr>${selectedText || placeholder || ''}</abbr>` + currentContent.substring(end);
         newCursorPos = start + 6 + (selectedText || placeholder || '').length + 7;
+        break;
+      case 'u':
+        newContent = currentContent.substring(0, start) + `<u>${selectedText || placeholder || ''}</u>` + currentContent.substring(end);
+        newCursorPos = start + 3 + (selectedText || placeholder || '').length + 4;
         break;
       default:
         return;

@@ -107,8 +107,10 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
       category: courseData.category || "Beginner",
       author: courseData.author || "",
       tags: courseData.tags || [],
-      template: courseData.template || "academic",
-      customCSS: courseData.customCSS || "",
+      isFree: courseData.isFree || false,
+      estimatedCourseTime: courseData.sections?.reduce((total, section) => 
+        total + (section.lessons?.reduce((sectionTotal, lesson) => 
+          sectionTotal + (lesson.estimatedTime || 0), 0) || 0), 0) || 0,
       createdAt: courseData.createdAt || new Date().toISOString(),
       updatedAt: courseData.updatedAt || new Date().toISOString(),
       sections: courseData.sections?.map(section => ({
@@ -136,7 +138,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   };
 
   const generateStepBasedHTML = (lesson: {title?: string, content?: string, steps?: Array<{title?: string, content?: string}>, id?: string, slug?: string, estimatedTime?: number}, stepIndex: number | null = null) => {
-    const styles = getTemplateStyles(courseData.template || "academic");
+    const styles = getTemplateStyles("academic");
     const script = getTemplateScript();
     
     let content = '';
@@ -230,7 +232,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   };
 
   const generateIndexHTML = () => {
-    const styles = getTemplateStyles(courseData.template || "academic");
+    const styles = getTemplateStyles("academic");
     const script = getTemplateScript();
     
     const navigationHTML = courseData.sections?.map(section => `
@@ -405,7 +407,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   };
   
   const generateSPAHTML = () => {
-    const styles = getTemplateStyles(courseData.template || "academic");
+    const styles = getTemplateStyles("academic");
     const script = getTemplateScript();
     
     const navigationHTML = courseData.sections?.map(section => `
@@ -644,8 +646,10 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   "category": "${courseData.category || 'Beginner'}",
   "author": "${courseData.author || ''}",
   "tags": ${JSON.stringify(courseData.tags || [])},
-  "template": "${courseData.template || 'academic'}",
-  "customCSS": "${courseData.customCSS || ''}",
+  "isFree": ${courseData.isFree || false},
+  "estimatedCourseTime": ${courseData.sections?.reduce((total, section) => 
+    total + (section.lessons?.reduce((sectionTotal, lesson) => 
+      sectionTotal + (lesson.estimatedTime || 0), 0) || 0), 0) || 0},
   "createdAt": "${courseData.createdAt || new Date().toISOString()}",
   "updatedAt": "${courseData.updatedAt || new Date().toISOString()}",
   "sections": [

@@ -8,10 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X, Plus } from "lucide-react";
 import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Course } from "@/entities/Course";
 
 interface CourseDetailsFormProps {
-  courseData: any;
-  onChange: (data: any) => void;
+  courseData: Partial<Course>;
+  onChange: (data: Partial<Course>) => void;
 }
 
 export default function CourseDetailsForm({ courseData, onChange }: CourseDetailsFormProps) {
@@ -47,10 +49,10 @@ export default function CourseDetailsForm({ courseData, onChange }: CourseDetail
   };
 
   const addTag = () => {
-    if (newTag.trim() && !courseData.tags.includes(newTag.trim())) {
+    if (newTag.trim() && !(courseData.tags || []).includes(newTag.trim())) {
       onChange({
         ...courseData,
-        tags: [...courseData.tags, newTag.trim()]
+        tags: [...(courseData.tags || []), newTag.trim()]
       });
       setNewTag("");
     }
@@ -59,7 +61,7 @@ export default function CourseDetailsForm({ courseData, onChange }: CourseDetail
   const removeTag = (tagToRemove: string) => {
     onChange({
       ...courseData,
-      tags: courseData.tags.filter((tag: string) => tag !== tagToRemove)
+      tags: (courseData.tags || []).filter((tag: string) => tag !== tagToRemove)
     });
   };
 
@@ -107,11 +109,11 @@ export default function CourseDetailsForm({ courseData, onChange }: CourseDetail
           <div className="space-y-2">
             <Label htmlFor="category">Difficulty Level</Label>
             <Select
-              value={courseData.category}
-              onValueChange={(value) => onChange({ ...courseData, category: value })}
+              value={courseData.category || "Beginner"}
+              onValueChange={(value) => onChange({ ...courseData, category: value as "Beginner" | "Intermediate" | "Advanced" })}
             >
               <SelectTrigger className="bg-white">
-                <SelectValue placeholder="Select difficulty" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Beginner">Beginner</SelectItem>
@@ -132,10 +134,20 @@ export default function CourseDetailsForm({ courseData, onChange }: CourseDetail
           </div>
         </div>
 
+        <div className="flex items-center space-x-2 mt-4">
+          <Switch
+            id="isFree"
+            checked={courseData.isFree}
+            onCheckedChange={(checked) => onChange({ ...courseData, isFree: checked })}
+            className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-slate-200"
+          />
+          <Label htmlFor="isFree" className="text-sm font-medium text-slate-700">Free Course</Label>
+        </div>
+
         <div className="space-y-2">
           <Label>Tags</Label>
           <div className="flex flex-wrap gap-2 mb-3">
-            {courseData.tags.map((tag: string, index: number) => (
+            {(courseData.tags || []).map((tag: string, index: number) => (
               <Badge key={index} variant="secondary" className="flex items-center gap-1">
                 {tag}
                 <Button
