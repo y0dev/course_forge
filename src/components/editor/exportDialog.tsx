@@ -637,7 +637,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
                 </p>
                 <div className="bg-slate-50 p-4 rounded-lg">
                   <h5 className="font-medium text-sm mb-2">Preview:</h5>
-                  <pre className="text-xs text-slate-600 overflow-x-auto">
+                  <pre className="text-xs text-slate-600 overflow-x-auto max-w-full break-words whitespace-pre-wrap max-h-96 overflow-y-auto">
 {`{
   "id": "${courseData.id || Date.now().toString()}",
   "title": "${courseData.title || 'Course Title'}",

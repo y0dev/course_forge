@@ -27,16 +27,14 @@ export default function CourseEditor() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [courseData, setCourseData] = useState<Partial<CourseType>>({
+  const [courseData, setCourseData] = useState<Partial<Course>>({
     title: "",
     slug: "",
     description: "",
     category: "Beginner",
     author: "",
     tags: [],
-    sections: [],
-    template: "academic",
-    customCSS: ""
+    sections: []
   });
   const [activeTab, setActiveTab] = useState("details");
   const [selectedLesson, setSelectedLesson] = useState<LessonWithSection | null>(null);
@@ -271,7 +269,7 @@ export default function CourseEditor() {
         {selectedLesson && selectedLesson.steps ? (
           <StepBasedLessonPreview lesson={selectedLesson} />
         ) : (
-          <CoursePreview courseData={courseData} />
+          <CoursePreview courseData={courseData as Course} />
         )}
       </div>
     );
@@ -357,11 +355,10 @@ export default function CourseEditor() {
 
       <div className="p-6 max-w-7xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="details">Course Details</TabsTrigger>
             <TabsTrigger value="structure">Course Structure</TabsTrigger>
             <TabsTrigger value="content">Content Editor</TabsTrigger>
-            <TabsTrigger value="settings">Export Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="details">
@@ -397,7 +394,40 @@ export default function CourseEditor() {
           </TabsContent>
 
           <TabsContent value="content">
-            {selectedLesson ? (
+            {editingLesson ? (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Edit Lesson: {editingLesson.title}</h2>
+                    <p className="text-sm text-slate-500">Section: {courseData.sections?.find(s => s.id === editingLesson.sectionId)?.title}</p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEditingLesson(null);
+                      setSelectedLesson(editingLesson);
+                    }}
+                  >
+                    Done Editing
+                  </Button>
+                </div>
+                <LessonTemplateCreator
+                  courseTitle={courseData.title || "Course"}
+                  onSave={(updatedLesson) => {
+                    if (editingLesson.sectionId) {
+                      updateLesson(editingLesson.sectionId, editingLesson.id, updatedLesson);
+                      setEditingLesson(null);
+                      setSelectedLesson({ ...updatedLesson, sectionId: editingLesson.sectionId });
+                    }
+                  }}
+                  onCancel={() => {
+                    setEditingLesson(null);
+                    setSelectedLesson(editingLesson);
+                  }}
+                  initialLesson={editingLesson}
+                />
+              </div>
+            ) : selectedLesson ? (
               selectedLesson.steps && selectedLesson.steps.length > 0 ? (
                 <StepBasedLessonPreview
                   lesson={selectedLesson}
@@ -429,42 +459,6 @@ export default function CourseEditor() {
                 </div>
               </div>
             )}
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Export Settings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-700">Template</label>
-                    <select
-                      value={courseData.template || "academic"}
-                      onChange={(e) => setCourseData(prev => ({ 
-                        ...prev, 
-                        template: e.target.value as "academic" | "modern" | "minimal" 
-                      }))}
-                      className="w-full mt-1 p-2 border border-slate-200 rounded-md"
-                    >
-                      <option value="academic">Academic</option>
-                      <option value="modern">Modern</option>
-                      <option value="minimal">Minimal</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-700">Custom CSS</label>
-                    <textarea
-                      value={courseData.customCSS}
-                      onChange={(e) => setCourseData(prev => ({ ...prev, customCSS: e.target.value }))}
-                      placeholder="Add custom CSS for your exported course..."
-                      className="w-full mt-1 p-2 border border-slate-200 rounded-md h-32"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>

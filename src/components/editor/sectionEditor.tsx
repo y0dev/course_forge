@@ -238,16 +238,6 @@ export default function SectionEditor({
                                     <Edit3 className="w-4 h-4" />
                                   </Button>
                                 )}
-                                {onPreviewLesson && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => onPreviewLesson(lesson)}
-                                    title="Preview Lesson"
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </Button>
-                                )}
                                 <Button
                                   size="sm"
                                   variant="ghost"
@@ -260,7 +250,7 @@ export default function SectionEditor({
                             </div>
                           )) || (
                             <p className="text-center text-slate-500 py-4 border border-dashed border-slate-200 rounded-lg">
-                              No lessons yet. Click "Add Lesson" to create one.
+                              No lessons yet. Click &quot;Add Lesson&quot; to create one.
                             </p>
                           )}
                         </div>

@@ -13,6 +13,34 @@ import {
 } from "lucide-react";
 import { Lesson } from "@/entities/Course";
 
+// Function to format step content with styled first header
+const formatStepContent = (content: string): string => {
+  if (!content) return '';
+  
+  // Regex to find the first <h1>, <h2>, or <h3>
+  const headerRegex = /<(h[1-3])[^>]*>([\s\S]*?)<\/h[1-3]>/i;
+  const match = content.match(headerRegex);
+  
+  if (!match) return content;
+  
+  const headerText = match[2].trim();
+  const headerStart = match.index!;
+  const headerEnd = headerStart + match[0].length;
+  
+  // Create the styled header with book icon
+  const styledHeader = `<div class="flex flex-col space-y-1.5 p-6"><h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2"><div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4 text-blue-600" aria-hidden="true"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></div>${headerText}</h3></div>`;
+  
+  // Split content into before header, header, and after header
+  const beforeHeader = content.slice(0, headerStart);
+  const afterHeader = content.slice(headerEnd);
+  
+  // Wrap the content after header with the specified div structure
+  const wrappedAfterHeader = afterHeader.trim() ? `<div class="p-6 pt-4 prose prose-slate max-w-none"><div class="space-y-4">${afterHeader}</div></div>` : '';
+  
+  // Return the content with the styled header and wrapped content
+  return beforeHeader + styledHeader + wrappedAfterHeader;
+};
+
 interface StepBasedLessonPreviewProps {
   lesson: Lesson;
 }
@@ -48,7 +76,7 @@ export default function StepBasedLessonPreview({ lesson }: StepBasedLessonPrevie
           No lesson content available
         </h3>
         <p className="text-slate-500">
-          This lesson doesn't have any steps yet.
+          This lesson doesn&apos;t have any steps yet.
         </p>
       </div>
     );
@@ -77,11 +105,16 @@ export default function StepBasedLessonPreview({ lesson }: StepBasedLessonPrevie
 
         {/* Progress Bar */}
         <div className="mb-4">
-          <div className="flex items-center justify-between text-sm text-slate-600 mb-2">
-            <span>Progress</span>
-            <span>{currentStepIndex + 1}/{totalSteps} steps</span>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-slate-700">Step {currentStepIndex + 1} of {totalSteps}</span>
+            <span className="text-sm text-slate-600">{Math.round(progress)}% complete</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <div className="w-full bg-[var(--gray)] rounded-full h-2">
+            <div 
+              className="bg-[var(--accent)] h-2 rounded-full transition-all duration-300" 
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
         {/* Step Navigation */}
         <div className="flex items-center justify-between">
@@ -144,7 +177,7 @@ export default function StepBasedLessonPreview({ lesson }: StepBasedLessonPrevie
 
             <div 
               className="prose prose-slate max-w-none"
-              dangerouslySetInnerHTML={{ __html: currentStep.content }}
+              dangerouslySetInnerHTML={{ __html: formatStepContent(currentStep.content) }}
             />
           </div>
 

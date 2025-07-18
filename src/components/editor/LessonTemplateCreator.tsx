@@ -33,6 +33,7 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
     { icon: Code2, label: "Table", format: "table", placeholder: "Table" },
     // Demo dropdown will be added below
     { icon: Code2, label: "BR", format: "br", placeholder: "" },
+    // Media dropdown will be added below
     // Div dropdown below
   ];
   // Text formatting options
@@ -53,6 +54,64 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
     { label: "Green Unordered", value: "green-50", title: "Little-Endian Storage:", ulClass: "mt-2 space-y-1", type: "ul" },
     { label: "Blue Ordered", value: "blue-50", title: "Step-by-Step Process:", olClass: "mt-2 space-y-1 list-decimal list-inside", type: "ol" },
     { label: "Green Ordered", value: "green-50", title: "Implementation Steps:", olClass: "mt-2 space-y-1 list-decimal list-inside", type: "ol" },
+  ];
+
+  // Colored bullet list options
+  const coloredBulletLists = [
+    {
+      label: "Red/Yellow/Blue Bullets",
+      value: "rgb-bullets",
+      html: `<ul class="space-y-2">
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+    <strong>LED:</strong> Light Emitting Diode (has polarity!)
+  </li>
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
+    <strong>Resistor:</strong> Limits current flow (220Ω recommended)
+  </li>
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+    <strong>GPIO Pin:</strong> Digital output from microcontroller
+  </li>
+</ul>`
+    },
+    {
+      label: "Green/Orange/Purple Bullets",
+      value: "gop-bullets",
+      html: `<ul class="space-y-2">
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+    <strong>Component 1:</strong> Description of first component
+  </li>
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-orange-500 rounded-full"></span>
+    <strong>Component 2:</strong> Description of second component
+  </li>
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-purple-500 rounded-full"></span>
+    <strong>Component 3:</strong> Description of third component
+  </li>
+</ul>`
+    },
+    {
+      label: "Cyan/Magenta/Indigo Bullets",
+      value: "cmi-bullets",
+      html: `<ul class="space-y-2">
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-cyan-500 rounded-full"></span>
+    <strong>Step 1:</strong> First step description
+  </li>
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-pink-500 rounded-full"></span>
+    <strong>Step 2:</strong> Second step description
+  </li>
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-indigo-500 rounded-full"></span>
+    <strong>Step 3:</strong> Third step description
+  </li>
+</ul>`
+    }
   ];
   // More tags for dropdown
   const moreTags = [
@@ -163,6 +222,153 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
       html: '<div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">Div content</div>'
     }
   ];
+
+  // Card layout options
+  const cardLayouts = [
+    {
+      label: "2 Columns",
+      value: "2-cols",
+      html: `<div class="grid md:grid-cols-2 gap-6 my-6">
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xs">1</span>
+      Card Title 1
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+  
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xs">2</span>
+      Card Title 2
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+</div>`
+    },
+    {
+      label: "3 Columns",
+      value: "3-cols",
+      html: `<div class="grid md:grid-cols-3 gap-6 my-6">
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xs">1</span>
+      Card Title 1
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+  
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xs">2</span>
+      Card Title 2
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+  
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs">3</span>
+      Card Title 3
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+</div>`
+    },
+    {
+      label: "4 Columns",
+      value: "4-cols",
+      html: `<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 my-6">
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xs">1</span>
+      Card Title 1
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+  
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xs">2</span>
+      Card Title 2
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+  
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs">3</span>
+      Card Title 3
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+  
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-xs">4</span>
+      Card Title 4
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+</div>`
+    }
+  ];
+
+  // Info box options
+  const infoBoxes = [
+    {
+      label: "Next Steps (Green)",
+      value: "next-steps-green",
+      html: `<div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+  <h4 class="font-bold text-green-800 mb-3">🎓 Next Steps:</h4>
+  <ul class="text-green-700 space-y-2">
+    <li>• Try controlling multiple LEDs simultaneously</li>
+    <li>• Experiment with different blinking patterns</li>
+    <li>• Add button input to control LED behavior</li>
+    <li>• Create a traffic light simulation</li>
+  </ul>
+</div>`
+    },
+    {
+      label: "Tips (Blue)",
+      value: "tips-blue",
+      html: `<div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
+  <h4 class="font-bold text-blue-800 mb-3">💡 Pro Tips:</h4>
+  <ul class="text-blue-700 space-y-2">
+    <li>• Always check your connections before powering on</li>
+    <li>• Use appropriate resistor values for your LEDs</li>
+    <li>• Consider power consumption in your designs</li>
+    <li>• Test your code incrementally</li>
+  </ul>
+</div>`
+    },
+    {
+      label: "Warning (Amber)",
+      value: "warning-amber",
+      html: `<div class="bg-gradient-to-r from-amber-50 to-yellow-50 p-6 rounded-xl border border-amber-200">
+  <h4 class="font-bold text-amber-800 mb-3">⚠️ Important Notes:</h4>
+  <ul class="text-amber-700 space-y-2">
+    <li>• Never connect LEDs directly to GPIO pins</li>
+    <li>• Always use current-limiting resistors</li>
+    <li>• Check voltage levels before connecting</li>
+    <li>• Double-check your wiring connections</li>
+  </ul>
+</div>`
+    },
+    {
+      label: "Resources (Purple)",
+      value: "resources-purple",
+      html: `<div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-200">
+  <h4 class="font-bold text-purple-800 mb-3">📚 Additional Resources:</h4>
+  <ul class="text-purple-700 space-y-2">
+    <li>• Official microcontroller documentation</li>
+    <li>• Community forums and discussions</li>
+    <li>• Video tutorials and walkthroughs</li>
+    <li>• Sample code repositories</li>
+  </ul>
+</div>`
+    }
+  ];
   return (
     <div className="flex flex-wrap gap-1 p-2 bg-slate-50 border border-slate-200 rounded-md mb-2">
       
@@ -242,6 +448,65 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+      {/* Media dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Insert Media">
+            <Code2 className="w-3 h-3 mr-1" />Media
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
+          <DropdownMenuItem
+            onClick={() => onFormat("image", "https://example.com/image.jpg")}
+            className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+                <circle cx="9" cy="9" r="2"></circle>
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+              </svg>
+              Image
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onFormat("gif", "https://example.com/animation.gif")}
+            className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+                <circle cx="9" cy="9" r="2"></circle>
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+              </svg>
+              GIF
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onFormat("video", "https://example.com/video.mp4")}
+            className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <polygon points="5,3 19,12 5,21 5,3"></polygon>
+              </svg>
+              Video
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onFormat("youtube", "https://www.youtube.com/watch?v=dQw4w9WgXcQ")}
+            className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.34A85.85 85.85 0 0 1 12 2a85.85 85.85 0 0 1 8.1 3.66A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.34A85.85 85.85 0 0 1 12 22a85.85 85.85 0 0 1-8.1-3.66A2 2 0 0 1 2.5 17Z"></path>
+                <path d="m10 15 5-3-5-3z"></path>
+              </svg>
+              YouTube
+            </div>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       {/* Code dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -309,6 +574,25 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+      {/* Colored Bullet Lists dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Insert Colored Bullet List">
+            <Code2 className="w-3 h-3 mr-1" />Colored Bullets
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
+          {coloredBulletLists.map((list) => (
+            <DropdownMenuItem
+              key={list.value}
+              onClick={() => onFormat("coloredbullets", list.html)}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            >
+              {list.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       {/* More tags dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -328,6 +612,44 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+      {/* Cards dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Insert Card Layout">
+            <Code2 className="w-3 h-3 mr-1" />Cards
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
+          {cardLayouts.map((layout) => (
+            <DropdownMenuItem
+              key={layout.value}
+              onClick={() => onFormat("cards", layout.html)}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            >
+              {layout.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {/* Info Box dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" title="Insert Info Box">
+            <Code2 className="w-3 h-3 mr-1" />Info Box
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="bg-white border border-slate-200 shadow-lg">
+          {infoBoxes.map((box) => (
+            <DropdownMenuItem
+              key={box.value}
+              onClick={() => onFormat("infobox", box.html)}
+              className="hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            >
+              {box.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
@@ -336,32 +658,43 @@ interface LessonTemplateCreatorProps {
   courseTitle: string;
   onSave: (lesson: Lesson) => void;
   onCancel: () => void;
+  initialLesson?: Lesson;
 }
 
 function getPreviewHtml(content: string): string {
   if (!content) return '';
+  
   // Regex to find the first <h1>, <h2>, or <h3>
   const headerRegex = /<(h[1-3])[^>]*>([\s\S]*?)<\/h[1-3]>/i;
   const match = content.match(headerRegex);
+  
   if (!match) return content;
+  
   const headerText = match[2].trim();
-  const customHeader = `<h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2"><div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4 text-blue-600" aria-hidden="true"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></div>${headerText}</h3>`;
-  // Split content into before header, header, and after header
   const headerStart = match.index!;
   const headerEnd = headerStart + match[0].length;
+  
+  // Create the styled header with book icon
+  const styledHeader = `<div class="flex flex-col space-y-1.5 p-6"><h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2"><div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4 text-blue-600" aria-hidden="true"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></div>${headerText}</h3></div>`;
+  
+  // Split content into before header, header, and after header
   const beforeHeader = content.slice(0, headerStart);
   const afterHeader = content.slice(headerEnd);
-  // Wrap afterHeader in the requested divs
-  const wrappedAfter = `<div class="p-6 pt-4 prose prose-slate max-w-none"><div class="space-y-4">${afterHeader}</div></div>`;
-  return beforeHeader + customHeader + wrappedAfter;
+  
+  // Wrap the content after header with the specified div structure
+  const wrappedAfterHeader = afterHeader.trim() ? `<div class="p-6 pt-4 prose prose-slate max-w-none"><div class="space-y-4">${afterHeader}</div></div>` : '';
+  
+  // Return the content with the styled header and wrapped content
+  return beforeHeader + styledHeader + wrappedAfterHeader;
 }
 
 export default function LessonTemplateCreator({ 
   courseTitle, 
   onSave, 
-  onCancel 
+  onCancel,
+  initialLesson
 }: LessonTemplateCreatorProps) {
-  const [lesson, setLesson] = useState<Partial<Lesson>>({
+  const [lesson, setLesson] = useState<Partial<Lesson>>(initialLesson || {
     title: "",
     course: courseTitle,
     estimatedTime: 15,
@@ -379,7 +712,7 @@ export default function LessonTemplateCreator({
   const addStep = () => {
     const newStep: LessonStep = {
       title: "New Step",
-      content: `<h1>Step Content</h1><p>Add your content here...</p>`
+      content: `<h1>Step Content</h1>\n\n<p>Add your content here...</p>`
     };
     const updatedSteps = [...(lesson.steps || []), newStep];
     updateLesson({ steps: updatedSteps });
@@ -414,14 +747,14 @@ export default function LessonTemplateCreator({
   const handleSave = () => {
     if (lesson.title && lesson.steps && lesson.steps.length > 0) {
       const newLesson: Lesson = {
-        id: Date.now().toString(),
+        id: lesson.id || Date.now().toString(),
         title: lesson.title,
         course: lesson.course || courseTitle,
         estimatedTime: lesson.estimatedTime || 15,
         difficulty: lesson.difficulty || "Beginner",
         progress: lesson.progress || 0,
         steps: lesson.steps,
-        slug: `lesson-${Date.now()}`,
+        slug: lesson.slug || `lesson-${Date.now()}`,
       };
       onSave(newLesson);
     }
@@ -429,7 +762,11 @@ export default function LessonTemplateCreator({
 
   const canSave = lesson.title && lesson.steps && lesson.steps.length > 0;
 
-
+  function extractYouTubeId(url: string): string | null {
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
 
   function handleFormat(format: string, placeholder?: string) {
     if (!textareaRef.current || activeStepIndex < 0 || !lesson.steps || activeStepIndex >= lesson.steps.length) {
@@ -581,6 +918,145 @@ export default function LessonTemplateCreator({
         newContent = currentContent.substring(0, start) + `<u>${selectedText || placeholder || ''}</u>` + currentContent.substring(end);
         newCursorPos = start + 3 + (selectedText || placeholder || '').length + 4;
         break;
+      case 'image':
+        const imageUrl = selectedText || placeholder || 'https://example.com/image.jpg';
+        const imageAlt = prompt('Enter alt text for the image:', 'Image description');
+        const imageTitle = prompt('Enter title for the image (optional):', '');
+        const imageHtml = imageTitle 
+          ? `<div class="bg-gradient-to-r from-cyan-50 to-blue-50 p-6 rounded-xl border border-cyan-200 my-6">
+  <img src="${imageUrl}" alt="${imageAlt || 'Image'}" class="w-full h-48 object-cover rounded-lg mb-4 shadow-md">
+  <p class="text-sm text-cyan-700 text-center"><strong>${imageTitle}</strong></p>
+</div>`
+          : `<div class="bg-gradient-to-r from-cyan-50 to-blue-50 p-6 rounded-xl border border-cyan-200 my-6">
+  <img src="${imageUrl}" alt="${imageAlt || 'Image'}" class="w-full h-48 object-cover rounded-lg shadow-md">
+</div>`;
+        newContent = currentContent.substring(0, start) + imageHtml + currentContent.substring(end);
+        newCursorPos = start + 0;
+        break;
+      case 'gif':
+        const gifUrl = selectedText || placeholder || 'https://example.com/animation.gif';
+        const gifAlt = prompt('Enter alt text for the GIF:', 'Animated GIF');
+        const gifTitle = prompt('Enter title for the GIF (optional):', '');
+        const gifHtml = gifTitle 
+          ? `<div class="bg-gradient-to-r from-cyan-50 to-blue-50 p-6 rounded-xl border border-cyan-200 my-6">
+  <img src="${gifUrl}" alt="${gifAlt || 'GIF'}" class="w-full h-48 object-cover rounded-lg mb-4 shadow-md">
+  <p class="text-sm text-cyan-700 text-center"><strong>${gifTitle}</strong></p>
+</div>`
+          : `<div class="bg-gradient-to-r from-cyan-50 to-blue-50 p-6 rounded-xl border border-cyan-200 my-6">
+  <img src="${gifUrl}" alt="${gifAlt || 'GIF'}" class="w-full h-48 object-cover rounded-lg shadow-md">
+</div>`;
+        newContent = currentContent.substring(0, start) + gifHtml + currentContent.substring(end);
+        newCursorPos = start + 0;
+        break;
+      case 'video':
+        const videoUrl = selectedText || placeholder || 'https://example.com/video.mp4';
+        const videoTitle = prompt('Enter title for the video:', 'Video');
+        newContent = currentContent.substring(0, start) + `<div class="bg-gradient-to-r from-cyan-50 to-blue-50 p-6 rounded-xl border border-cyan-200 my-6">
+  <video controls class="w-full h-48 object-cover rounded-lg mb-4 shadow-md">
+    <source src="${videoUrl}" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+  <p class="text-sm text-cyan-700 text-center"><strong>${videoTitle || 'Video'}</strong></p>
+</div>` + currentContent.substring(end);
+        newCursorPos = start + 0;
+        break;
+      case 'youtube':
+        const youtubeUrl = selectedText || placeholder || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+        const videoId = extractYouTubeId(youtubeUrl);
+        const youtubeTitle = prompt('Enter title for the YouTube video:', 'YouTube Video');
+        if (videoId) {
+          newContent = currentContent.substring(0, start) + `<div class="my-4"><div class="relative w-full" style="padding-bottom: 56.25%;"><iframe src="https://www.youtube.com/embed/${videoId}" class="absolute top-0 left-0 w-full h-full rounded-lg shadow-md" frameborder="0" allowfullscreen></iframe></div><p class="text-sm text-gray-600 mt-2">${youtubeTitle || 'YouTube Video'}</p></div>` + currentContent.substring(end);
+        } else {
+          newContent = currentContent.substring(0, start) + `<div class="my-4 p-4 bg-red-50 border border-red-200 rounded-lg"><p class="text-red-600">Invalid YouTube URL. Please provide a valid YouTube video URL.</p></div>` + currentContent.substring(end);
+        }
+        newCursorPos = start + 0;
+        break;
+      case 'cards':
+        let cardsHtml = placeholder || `<div class="grid md:grid-cols-2 gap-6 my-6">
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xs">1</span>
+      Card Title 1
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+  
+  <div class="bg-white p-5 rounded-lg shadow-md border border-slate-200">
+    <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+      <span class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xs">2</span>
+      Card Title 2
+    </h4>
+    <p class="text-slate-600 text-sm">Card description goes here.</p>
+  </div>
+</div>`;
+        if (selectedText) {
+          // Replace card titles with selected text if provided
+          cardsHtml = cardsHtml.replace(/Card Title \d+/g, (match: string) => {
+            const cardNumber = match.match(/\d+/)?.[0];
+            if (cardNumber) {
+              const lines = selectedText.split('\n');
+              return lines[parseInt(cardNumber) - 1] || match;
+            }
+            return match;
+          });
+        }
+        newContent = currentContent.substring(0, start) + cardsHtml + currentContent.substring(end);
+        newCursorPos = start + 0;
+        break;
+      case 'infobox':
+        let infoboxHtml = placeholder || `<div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+  <h4 class="font-bold text-green-800 mb-3">🎓 Next Steps:</h4>
+  <ul class="text-green-700 space-y-2">
+    <li>• Try controlling multiple LEDs simultaneously</li>
+    <li>• Experiment with different blinking patterns</li>
+    <li>• Add button input to control LED behavior</li>
+    <li>• Create a traffic light simulation</li>
+  </ul>
+</div>`;
+        if (selectedText) {
+          // Replace list items with selected text if provided
+          const lines = selectedText.split('\n').filter(line => line.trim());
+          if (lines.length > 0) {
+            const listItems = lines.map(line => `    <li>• ${line.trim()}</li>`).join('\n');
+            infoboxHtml = infoboxHtml.replace(/    <li>• .*<\/li>/g, '').replace(/(<ul class="[^"]*">)/, `$1\n${listItems}\n  `);
+          }
+        }
+        newContent = currentContent.substring(0, start) + infoboxHtml + currentContent.substring(end);
+        newCursorPos = start + 0;
+        break;
+      case 'coloredbullets':
+        let coloredBulletsHtml = placeholder || `<ul class="space-y-2">
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+    <strong>LED:</strong> Light Emitting Diode (has polarity!)
+  </li>
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
+    <strong>Resistor:</strong> Limits current flow (220Ω recommended)
+  </li>
+  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+    <strong>GPIO Pin:</strong> Digital output from microcontroller
+  </li>
+</ul>`;
+        if (selectedText) {
+          // Replace list items with selected text if provided
+          const lines = selectedText.split('\n').filter(line => line.trim());
+          if (lines.length > 0) {
+            const colors = ['bg-red-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500', 'bg-orange-500', 'bg-purple-500', 'bg-cyan-500', 'bg-pink-500', 'bg-indigo-500'];
+            const listItems = lines.map((line, index) => {
+              const color = colors[index % colors.length];
+              return `  <li class="flex items-center gap-2">
+    <span class="w-3 h-3 ${color} rounded-full"></span>
+    <strong>${line.trim()}</strong>
+  </li>`;
+            }).join('\n');
+            coloredBulletsHtml = `<ul class="space-y-2">\n${listItems}\n</ul>`;
+          }
+        }
+        newContent = currentContent.substring(0, start) + coloredBulletsHtml + currentContent.substring(end);
+        newCursorPos = start + 0;
+        break;
       default:
         return;
     }
@@ -599,7 +1075,7 @@ export default function LessonTemplateCreator({
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Create New Lesson</CardTitle>
+            <CardTitle>{initialLesson ? 'Edit Lesson' : 'Create New Lesson'}</CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
@@ -760,9 +1236,9 @@ export default function LessonTemplateCreator({
                     
                     {/* Content Preview */}
                     <div>
-                      <label className="text-sm font-medium text-slate-700">Preview</label>
+                      <label className="text-sm font-medium text-slate-700">Step Preview</label>
                       <div
-                        className="mt-1 p-4 border border-slate-200 rounded-md bg-white min-h-32"
+                        className="mt-1 p-4 border border-slate-200 rounded-md bg-white min-h-32 prose prose-slate max-w-none"
                         dangerouslySetInnerHTML={{
                           __html: getPreviewHtml(lesson.steps![activeStepIndex].content)
                         }}
@@ -783,7 +1259,7 @@ export default function LessonTemplateCreator({
         </Button>
         <Button onClick={handleSave} disabled={!canSave}>
           <Save className="w-4 h-4 mr-2" />
-          Create Lesson
+          {initialLesson ? 'Save Changes' : 'Create Lesson'}
         </Button>
       </div>
     </div>

@@ -79,7 +79,7 @@ export default function CourseCard({ course, totalLessons, estimatedTime, onRefr
                   <MoreHorizontal className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" >
                 <DropdownMenuItem asChild>
                   <Link href={`/courseEditor?id=${course.id}`}>
                     <Edit3 className="w-4 h-4 mr-2" />
@@ -90,10 +90,10 @@ export default function CourseCard({ course, totalLessons, estimatedTime, onRefr
                   <Eye className="w-4 h-4 mr-2" />
                   Preview
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <Download className="w-4 h-4 mr-2" />
                   Export HTML
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem className="text-red-600 hover:bg-red-50" onClick={() => setShowConfirm(true)}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                   Delete
@@ -148,7 +148,18 @@ export default function CourseCard({ course, totalLessons, estimatedTime, onRefr
                 Edit
               </Button>
             </Link>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => {
+              const json = JSON.stringify(course, null, 2);
+              const blob = new Blob([json], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${course.slug || course.title || 'course'}.json`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }}>
               <Download className="w-4 h-4" />
             </Button>
           </div>
