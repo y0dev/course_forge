@@ -144,6 +144,16 @@ export default function CourseDetailsForm({ courseData, onChange }: CourseDetail
           <Label htmlFor="isFree" className="text-sm font-medium text-slate-700">Free Course</Label>
         </div>
 
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="isRecommended"
+            checked={courseData.isRecommended}
+            onCheckedChange={(checked) => onChange({ ...courseData, isRecommended: checked })}
+            className="data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-slate-200"
+          />
+          <Label htmlFor="isRecommended" className="text-sm font-medium text-slate-700">Recommended Course</Label>
+        </div>
+
         <div className="space-y-2">
           <Label>Tags</Label>
           <div className="flex flex-wrap gap-2 mb-3">

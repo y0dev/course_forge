@@ -288,6 +288,17 @@ export default function CourseEditor() {
               <ArrowLeft className="w-4 h-4" />
               Back to Editor
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowLessonCreator(false);
+                setActiveTab("structure");
+              }}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Structure
+            </Button>
             <h1 className="text-xl font-bold text-slate-900">Create New Lesson</h1>
           </div>
           <LessonTemplateCreator

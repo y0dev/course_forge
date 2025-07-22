@@ -35,6 +35,7 @@ export interface Course {
   createdAt: string;
   updatedAt: string;
   isFree: boolean;
+  isRecommended: boolean;
 }
 
 class CourseService {
@@ -89,7 +90,8 @@ class CourseService {
       author: courseData.author || "Anonymous",
       tags: courseData.tags || [],
       sections: courseData.sections || [],
-      isFree: courseData.isFree || true,
+      isFree: courseData.isFree || true,  
+      isRecommended: courseData.isRecommended || false, 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
