@@ -15,11 +15,24 @@ export interface Lesson {
   content?: string; // Legacy markdown content
 }
 
+export type QuestionType = "multiple_choice" | "fill_in_blank" | "other";
+
+export interface Question {
+  _id?: string; // mongoose.Types.ObjectId as string
+  type: 'multiple-choice' | 'fill-in-the-blank' | 'other';
+  prompt: string;
+  options?: string[]; // for multiple-choice
+  answer: string | string[]; // string for fill-in, string[] for multiple correct
+  explanation?: string;
+  sectionId: string; // reference to the section the question belongs to
+}
+
 export interface Section {
   id: string;
   title: string;
   slug: string;
   lessons: Lesson[];
+  questions: Question[];
 }
 
 export interface Course {

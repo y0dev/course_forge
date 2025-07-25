@@ -40,6 +40,9 @@ export default function SectionEditor({
   onEditLesson,
 }: SectionEditorProps) {
   const [expandedSections, setExpandedSections] = useState(new Set());
+  // Remove quizSectionId and quizDraft, use questionSectionId and questionDraft
+  const [questionSectionId, setQuestionSectionId] = useState<string | null>(null);
+  const [questionDraft, setQuestionDraft] = useState<any>(null);
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -85,6 +88,14 @@ export default function SectionEditor({
       return "Step-based";
     }
     return "Markdown";
+  };
+
+  // Add this function to handle quiz save
+  // Remove handleSaveQuiz, add handleSaveQuestions
+  const handleSaveQuestions = (sectionId: string, questions: any[]) => {
+    onUpdateSection(sectionId, { questions });
+    setQuestionSectionId(null);
+    setQuestionDraft(null);
   };
 
   if (sections.length === 0) {
@@ -254,6 +265,128 @@ export default function SectionEditor({
                           )}
                         </div>
                       </div>
+
+                      {/* Questions Editor */}
+                      <div className="mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-medium text-slate-700">Questions</h4>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setQuestionSectionId(section.id);
+                              setQuestionDraft(section.questions || []);
+                            }}
+                          >
+                            {section.questions && section.questions.length > 0 ? "Edit Questions" : "Add Questions"}
+                          </Button>
+                        </div>
+                        {section.questions && section.questions.length > 0 && (
+                          <div className="space-y-2">
+                            {section.questions.map((q: any, idx: number) => (
+                              <div key={q._id || q.id || idx} className="p-2 border rounded text-xs">
+                                <div><b>Q{idx + 1}:</b> {q.prompt} <span className="ml-2 italic">[{q.type}]</span></div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Questions Modal/Inline Editor */}
+                      {questionSectionId === section.id && (
+                        <div className="p-4 border rounded bg-gray-50 mt-2">
+                          <h5 className="font-semibold mb-2">Edit Questions</h5>
+                          {(questionDraft || []).map((q: any, idx: number) => (
+                            <div key={q._id || q.id || idx} className="mb-2 p-2 border rounded">
+                              <input
+                                className="border p-1 w-full mb-1"
+                                value={q.prompt}
+                                onChange={e => {
+                                  const updated = [...questionDraft];
+                                  updated[idx].prompt = e.target.value;
+                                  setQuestionDraft(updated);
+                                }}
+                                placeholder="Question prompt"
+                              />
+                              <select
+                                className="border p-1 mb-1"
+                                value={q.type}
+                                onChange={e => {
+                                  const updated = [...questionDraft];
+                                  updated[idx].type = e.target.value;
+                                  setQuestionDraft(updated);
+                                }}
+                              >
+                                <option value="multiple-choice">Multiple Choice</option>
+                                <option value="fill-in-the-blank">Fill in the Blank</option>
+                                <option value="other">Other</option>
+                              </select>
+                              {q.type === "multiple-choice" && (
+                                <div>
+                                  {(q.options || []).map((opt: string, oidx: number) => (
+                                    <div key={oidx} className="flex mb-1">
+                                      <input
+                                        className="border p-1 flex-1"
+                                        value={opt}
+                                        onChange={e => {
+                                          const updated = [...questionDraft];
+                                          updated[idx].options[oidx] = e.target.value;
+                                          setQuestionDraft(updated);
+                                        }}
+                                        placeholder={`Option ${oidx + 1}`}
+                                      />
+                                      <Button size="sm" variant="ghost" onClick={() => {
+                                        const updated = [...questionDraft];
+                                        updated[idx].options.splice(oidx, 1);
+                                        setQuestionDraft(updated);
+                                      }}>Remove</Button>
+                                    </div>
+                                  ))}
+                                  <Button size="sm" variant="outline" onClick={() => {
+                                    const updated = [...questionDraft];
+                                    updated[idx].options = [...(updated[idx].options || []), ""];
+                                    setQuestionDraft(updated);
+                                  }}>Add Option</Button>
+                                </div>
+                              )}
+                              <div className="mt-1">
+                                <input
+                                  className="border p-1 w-full"
+                                  value={q.answer || ""}
+                                  onChange={e => {
+                                    const updated = [...questionDraft];
+                                    updated[idx].answer = e.target.value;
+                                    setQuestionDraft(updated);
+                                  }}
+                                  placeholder="Answer(s)"
+                                />
+                              </div>
+                              <input
+                                className="border p-1 w-full mt-1"
+                                value={q.explanation || ""}
+                                onChange={e => {
+                                  const updated = [...questionDraft];
+                                  updated[idx].explanation = e.target.value;
+                                  setQuestionDraft(updated);
+                                }}
+                                placeholder="Explanation (optional)"
+                              />
+                              <Button size="sm" variant="ghost" onClick={() => {
+                                const updated = [...questionDraft];
+                                updated.splice(idx, 1);
+                                setQuestionDraft(updated);
+                              }}>Delete Question</Button>
+                            </div>
+                          ))}
+                          <Button size="sm" variant="outline" onClick={() => {
+                            setQuestionDraft([...(questionDraft || []), { _id: Date.now().toString(), type: "multiple-choice", prompt: "", options: [""], answer: "", explanation: "" }]);
+                          }}>Add Question</Button>
+                          <div className="flex gap-2 mt-2">
+                            <Button size="sm" variant="default" onClick={() => handleSaveQuestions(section.id, questionDraft)}>Save Questions</Button>
+                            <Button size="sm" variant="ghost" onClick={() => { setQuestionSectionId(null); setQuestionDraft(null); }}>Cancel</Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </CollapsibleContent>
