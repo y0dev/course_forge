@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -818,6 +819,31 @@ export default function LessonTemplateCreator({
         steps: lesson.steps,
         slug: lesson.slug || `lesson-${Date.now()}`,
       };
+      // Save to localStorage draft (update or insert lesson)
+      try {
+        const draft = localStorage.getItem('course_forge_draft');
+        if (draft) {
+          const course = JSON.parse(draft);
+          if (course.sections) {
+            course.sections = course.sections.map((section: any) => {
+              // If the lesson exists, update it; otherwise, add it
+              if (section.lessons?.some((l: any) => l.id === newLesson.id)) {
+                return {
+                  ...section,
+                  lessons: section.lessons.map((l: any) => l.id === newLesson.id ? newLesson : l)
+                };
+              } else if (section.id === (lesson as any).sectionId) {
+                return {
+                  ...section,
+                  lessons: [...section.lessons, newLesson]
+                };
+              }
+              return section;
+            });
+            localStorage.setItem('course_forge_draft', JSON.stringify(course));
+          }
+        }
+      } catch {}
       onSave(newLesson);
     }
   };

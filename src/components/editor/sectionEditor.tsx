@@ -11,7 +11,7 @@ import {
   GripVertical, 
   FileText,
   Clock,
-  Play
+  Eye
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -20,6 +20,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useState } from "react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 interface SectionEditorProps {
   sections: any[];
@@ -38,6 +40,7 @@ export default function SectionEditor({
   onSelectLesson,
   onUpdateLesson,
   onEditLesson,
+  onPreviewLesson
 }: SectionEditorProps) {
   const [expandedSections, setExpandedSections] = useState(new Set());
   // Remove quizSectionId and quizDraft, use questionSectionId and questionDraft
@@ -230,14 +233,6 @@ export default function SectionEditor({
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => onSelectLesson(lesson, section.id)}
-                                  title="Open in Content Editor"
-                                >
-                                  <Play className="w-4 h-4" />
-                                </Button>
                                 {onEditLesson && (
                                   <Button
                                     size="sm"
@@ -248,6 +243,14 @@ export default function SectionEditor({
                                     <Edit3 className="w-4 h-4" />
                                   </Button>
                                 )}
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => onPreviewLesson && onPreviewLesson({ ...lesson, sectionId: section.id })}
+                                  title="Preview Lesson"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
                                 <Button
                                   size="sm"
                                   variant="ghost"
@@ -298,8 +301,8 @@ export default function SectionEditor({
                           <h5 className="font-semibold mb-2">Edit Questions</h5>
                           {(questionDraft || []).map((q: any, idx: number) => (
                             <div key={q._id || q.id || idx} className="mb-2 p-2 border rounded">
-                              <input
-                                className="border p-1 w-full mb-1"
+                              <Input
+                                className="mb-1"
                                 value={q.prompt}
                                 onChange={e => {
                                   const updated = [...questionDraft];
@@ -308,25 +311,29 @@ export default function SectionEditor({
                                 }}
                                 placeholder="Question prompt"
                               />
-                              <select
-                                className="border p-1 mb-1"
+                              <Select
                                 value={q.type}
-                                onChange={e => {
+                                onValueChange={value => {
                                   const updated = [...questionDraft];
-                                  updated[idx].type = e.target.value;
+                                  updated[idx].type = value;
                                   setQuestionDraft(updated);
                                 }}
                               >
-                                <option value="multiple-choice">Multiple Choice</option>
-                                <option value="fill-in-the-blank">Fill in the Blank</option>
-                                <option value="other">Other</option>
-                              </select>
+                                <SelectTrigger className="mb-1">
+                                  <SelectValue placeholder="Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="multiple-choice">Multiple Choice</SelectItem>
+                                  <SelectItem value="fill-in-the-blank">Fill in the Blank</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
                               {q.type === "multiple-choice" && (
                                 <div>
                                   {(q.options || []).map((opt: string, oidx: number) => (
                                     <div key={oidx} className="flex mb-1">
-                                      <input
-                                        className="border p-1 flex-1"
+                                      <Input
+                                        className="flex-1"
                                         value={opt}
                                         onChange={e => {
                                           const updated = [...questionDraft];
@@ -350,8 +357,7 @@ export default function SectionEditor({
                                 </div>
                               )}
                               <div className="mt-1">
-                                <input
-                                  className="border p-1 w-full"
+                                <Input
                                   value={q.answer || ""}
                                   onChange={e => {
                                     const updated = [...questionDraft];
@@ -361,8 +367,8 @@ export default function SectionEditor({
                                   placeholder="Answer(s)"
                                 />
                               </div>
-                              <input
-                                className="border p-1 w-full mt-1"
+                              <Textarea
+                                className="w-full mt-1"
                                 value={q.explanation || ""}
                                 onChange={e => {
                                   const updated = [...questionDraft];

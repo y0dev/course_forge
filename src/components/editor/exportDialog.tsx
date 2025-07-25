@@ -108,7 +108,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
       author: courseData.author || "",
       tags: courseData.tags || [],
       isFree: courseData.isFree || false,
-      isRecommended: courseData.isRecommended || false,
+      recommended: courseData.recommended || false,
       estimatedCourseTime: courseData.sections?.reduce((total, section) => 
         total + (section.lessons?.reduce((sectionTotal, lesson) => 
           sectionTotal + (lesson.estimatedTime || 0), 0) || 0), 0) || 0,
@@ -641,7 +641,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   "author": "${courseData.author || ''}",
   "tags": ${JSON.stringify(courseData.tags || [])},
   "isFree": ${courseData.isFree || false},
-  "recommended": ${courseData.isRecommended || false},
+  "recommended": ${courseData.recommended || false},
   "estimatedCourseTime": ${courseData.sections?.reduce((total, section) => 
     total + (section.lessons?.reduce((sectionTotal, lesson) => 
       sectionTotal + (lesson.estimatedTime || 0), 0) || 0), 0) || 0},

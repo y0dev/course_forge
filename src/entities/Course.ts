@@ -32,7 +32,7 @@ export interface Section {
   title: string;
   slug: string;
   lessons: Lesson[];
-  questions: Question[];
+  questions?: Question[];
 }
 
 export interface Course {
@@ -48,7 +48,7 @@ export interface Course {
   createdAt: string;
   updatedAt: string;
   isFree: boolean;
-  isRecommended: boolean;
+  recommended: boolean;
 }
 
 class CourseService {
@@ -104,7 +104,7 @@ class CourseService {
       tags: courseData.tags || [],
       sections: courseData.sections || [],
       isFree: courseData.isFree || true,  
-      isRecommended: courseData.isRecommended || false, 
+      recommended: courseData.recommended || false, 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

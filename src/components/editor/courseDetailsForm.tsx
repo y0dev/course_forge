@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X, Plus } from "lucide-react";
-import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Course } from "@/entities/Course";
 
@@ -18,6 +17,7 @@ interface CourseDetailsFormProps {
 
 export default function CourseDetailsForm({ courseData, onChange }: CourseDetailsFormProps) {
   const [newTag, setNewTag] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Early return if courseData is undefined
   if (!courseData) {
@@ -63,6 +63,26 @@ export default function CourseDetailsForm({ courseData, onChange }: CourseDetail
       ...courseData,
       tags: (courseData.tags || []).filter((tag: string) => tag !== tagToRemove)
     });
+  };
+
+  const handleImportClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target?.result as string);
+        // Optionally validate json structure here
+        onChange(json);
+      } catch (err) {
+        alert("Invalid JSON file.");
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -147,8 +167,8 @@ export default function CourseDetailsForm({ courseData, onChange }: CourseDetail
         <div className="flex items-center space-x-2">
           <Switch
             id="isRecommended"
-            checked={courseData.isRecommended}
-            onCheckedChange={(checked) => onChange({ ...courseData, isRecommended: checked })}
+            checked={courseData.recommended}
+            onCheckedChange={(checked) => onChange({ ...courseData, recommended: checked })}
             className="data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-slate-200"
           />
           <Label htmlFor="isRecommended" className="text-sm font-medium text-slate-700">Recommended Course</Label>
@@ -183,6 +203,18 @@ export default function CourseDetailsForm({ courseData, onChange }: CourseDetail
               <Plus className="w-4 h-4" />
             </Button>
           </div>
+        </div>
+        <div>
+          <input
+            type="file"
+            accept="application/json"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          <Button type="button" variant="outline" onClick={handleImportClick}>
+            Import Course JSON
+          </Button>
         </div>
       </CardContent>
     </Card>

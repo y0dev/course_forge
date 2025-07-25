@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useRef } from "react";
 import { Course, type Lesson, type Section } from "@/entities/Course";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,6 +41,29 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   const [showLessonCreator, setShowLessonCreator] = useState(false);
   const [editingLesson, setEditingLesson] = useState<LessonWithSection | null>(null);
   const [targetSectionId, setTargetSectionId] = useState<string | null>(null);
+  const lessonEditorRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (editingLesson && lessonEditorRef.current) {
+      lessonEditorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [editingLesson]);
+
+  // Initialize courseData from localStorage draft if available
+  useEffect(() => {
+    const draft = localStorage.getItem('course_forge_draft');
+    if (draft) {
+      try {
+        setCourseData(JSON.parse(draft));
+      } catch {}
+    }
+  }, []);
+
+  useEffect(() => {
+    if (courseData) {
+      localStorage.setItem('course_forge_draft', JSON.stringify(courseData));
+    }
+  }, [courseData]);
 
   const courseId = searchParams.get('id');
 
@@ -109,11 +132,12 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
       id: Date.now().toString(),
       title: "New Section",
       slug: `section-${Date.now()}`,
-      lessons: []
+      lessons: [],
+      questions: [], // Ensure questions array is present
     };
     setCourseData(prev => ({
       ...prev,
-      sections: [...(prev.sections || []), newSection]
+      sections: [...(prev.sections || []), newSection],
     }));
   };
 
@@ -161,7 +185,7 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
       ...newLesson,
       sectionId: targetSectionId
     });
-    setActiveTab("content");
+    setActiveTab("structure"); // Changed from "content" to "structure"
     setShowLessonCreator(false);
     setTargetSectionId(null);
   };
@@ -192,13 +216,12 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
     
     const lessonWithSection = { ...lesson, sectionId };
     setSelectedLesson(lessonWithSection);
-    setActiveTab("content");
+    setActiveTab("structure"); // Changed from "content" to "structure"
   };
 
   const handleLessonEdit = (lesson: Lesson, sectionId: string) => {
     const lessonWithSection = { ...lesson, sectionId };
     setEditingLesson(lessonWithSection);
-    setActiveTab("content");
   };
 
   const handleLessonPreview = (lesson: Lesson) => {
@@ -209,6 +232,22 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   const onUpdateLesson = (updates: Partial<Lesson>) => {
     if (selectedLesson && selectedLesson.sectionId) {
       updateLesson(selectedLesson.sectionId, selectedLesson.id, updates);
+      setCourseData(prev => {
+        const updatedSections = (prev.sections || []).map(section => {
+          if (section.id === selectedLesson.sectionId) {
+            return {
+              ...section,
+              lessons: section.lessons.map(lesson =>
+                lesson.id === selectedLesson.id ? { ...lesson, ...updates } : lesson
+              ),
+            };
+          }
+          return section;
+        });
+        const updated = { ...prev, sections: updatedSections };
+        localStorage.setItem('course_forge_draft', JSON.stringify(updated));
+        return updated;
+      });
       setSelectedLesson(prev => prev ? { ...prev, ...updates } : null);
     }
   };
@@ -363,10 +402,9 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
 
       <div className="p-6 max-w-7xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="details">Course Details</TabsTrigger>
             <TabsTrigger value="structure">Course Structure</TabsTrigger>
-            <TabsTrigger value="content">Content Editor</TabsTrigger>
           </TabsList>
 
           <TabsContent value="details">
@@ -397,73 +435,86 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
                   onEditLesson={handleLessonEdit}
                   onPreviewLesson={handleLessonPreview}
                 />
+                {/* Inline lesson editor/preview below the structure */}
+                {editingLesson && (
+                  <div ref={lessonEditorRef} className="my-8 p-6 border rounded bg-white">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h2 className="text-xl font-bold text-slate-900">Edit Lesson: {editingLesson.title}</h2>
+                        <p className="text-sm text-slate-500">Section: {courseData.sections?.find(s => s.id === editingLesson.sectionId)?.title}</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          if (editingLesson.sectionId) {
+                            // Update lesson in courseData
+                            setCourseData(prev => {
+                              const updatedSections = (prev.sections || []).map(section => {
+                                if (section.id === editingLesson.sectionId) {
+                                  return {
+                                    ...section,
+                                    lessons: section.lessons.map(lesson =>
+                                      lesson.id === editingLesson.id ? { ...lesson, ...editingLesson } : lesson
+                                    ),
+                                  };
+                                }
+                                return section;
+                              });
+                              const updated = { ...prev, sections: updatedSections };
+                              localStorage.setItem('course_forge_draft', JSON.stringify(updated));
+                              return updated;
+                            });
+                          }
+                          setEditingLesson(null);
+                          setSelectedLesson(editingLesson);
+                        }}
+                      >
+                        Done Editing
+                      </Button>
+                    </div>
+                    <LessonTemplateCreator
+                      courseTitle={courseData.title || "Course"}
+                      onSave={(updatedLesson) => {
+                        if (editingLesson.sectionId) {
+                          updateLesson(editingLesson.sectionId, editingLesson.id, updatedLesson);
+                          setEditingLesson(null);
+                          setSelectedLesson({ ...updatedLesson, sectionId: editingLesson.sectionId });
+                        }
+                      }}
+                      onCancel={() => {
+                        setEditingLesson(null);
+                        setSelectedLesson(editingLesson);
+                      }}
+                      initialLesson={editingLesson}
+                    />
+                  </div>
+                )}
+                {selectedLesson && !editingLesson && (
+                  <div className="my-8 p-6 border rounded bg-white">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h2 className="text-xl font-bold text-slate-900">Preview Lesson: {selectedLesson.title}</h2>
+                        <p className="text-sm text-slate-500">Section: {courseData.sections?.find(s => s.id === selectedLesson.sectionId)?.title}</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedLesson(null)}
+                      >
+                        Close Preview
+                      </Button>
+                    </div>
+                    {selectedLesson.steps && selectedLesson.steps.length > 0 ? (
+                      <StepBasedLessonPreview lesson={selectedLesson} />
+                    ) : (
+                      <MarkdownEditor selectedLesson={selectedLesson} onUpdateLesson={onUpdateLesson} />
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="content">
-            {editingLesson ? (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-900">Edit Lesson: {editingLesson.title}</h2>
-                    <p className="text-sm text-slate-500">Section: {courseData.sections?.find(s => s.id === editingLesson.sectionId)?.title}</p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setEditingLesson(null);
-                      setSelectedLesson(editingLesson);
-                    }}
-                  >
-                    Done Editing
-                  </Button>
-                </div>
-                <LessonTemplateCreator
-                  courseTitle={courseData.title || "Course"}
-                  onSave={(updatedLesson) => {
-                    if (editingLesson.sectionId) {
-                      updateLesson(editingLesson.sectionId, editingLesson.id, updatedLesson);
-                      setEditingLesson(null);
-                      setSelectedLesson({ ...updatedLesson, sectionId: editingLesson.sectionId });
-                    }
-                  }}
-                  onCancel={() => {
-                    setEditingLesson(null);
-                    setSelectedLesson(editingLesson);
-                  }}
-                  initialLesson={editingLesson}
-                />
-              </div>
-            ) : selectedLesson ? (
-              selectedLesson.steps && selectedLesson.steps.length > 0 ? (
-                <StepBasedLessonPreview
-                  lesson={selectedLesson}
-                />
-              ) : (
-                <MarkdownEditor
-                  selectedLesson={selectedLesson}
-                  onUpdateLesson={onUpdateLesson}
-                />
-              )
-            ) : (
-              <div className="text-center py-12">
-                <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-slate-600 mb-2">
-                  No lesson selected
-                </h3>
-                <p className="text-slate-500 mb-6">
-                  Select a lesson from the course structure to start editing, or create a new one.
-                </p>
-                <div className="flex gap-3 justify-center">
-                  <Button variant="outline" onClick={() => setShowLessonCreator(true)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create New Lesson
-                  </Button>
-                </div>
-              </div>
-            )}
-          </TabsContent>
+          {/* Removed Content Editor Tab Content */}
         </Tabs>
       </div>
 
