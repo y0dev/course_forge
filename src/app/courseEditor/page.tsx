@@ -456,13 +456,9 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
                   Select a lesson from the course structure to start editing, or create a new one.
                 </p>
                 <div className="flex gap-3 justify-center">
-                  <Button onClick={() => setShowLessonCreator(true)}>
+                  <Button variant="outline" onClick={() => setShowLessonCreator(true)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create New Lesson
-                  </Button>
-                  <Button variant="outline" onClick={addSampleLesson}>
-                    <FileText className="w-4 h-4 mr-2" />
-                    Add Sample Lesson
                   </Button>
                 </div>
               </div>

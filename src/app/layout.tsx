@@ -17,11 +17,6 @@ const navigationItems = [
     title: "Course Editor",
     url: "/courseEditor",
     icon: FileText,
-  },
-  {
-    title: "Templates",
-    url: "/templates",
-    icon: Settings,
   }
 ];
 
