@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,6 @@ import {
   GripVertical, 
   FileText,
   Clock,
-  Eye,
   Play
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,7 +38,6 @@ export default function SectionEditor({
   onSelectLesson,
   onUpdateLesson,
   onEditLesson,
-  onPreviewLesson
 }: SectionEditorProps) {
   const [expandedSections, setExpandedSections] = useState(new Set());
 
@@ -124,7 +123,7 @@ export default function SectionEditor({
                           <p className="text-sm text-slate-500 mt-1">
                             {section.lessons?.length || 0} lessons • {
                               formatTime(
-                                section.lessons?.reduce((total, lesson) => 
+                                section.lessons?.reduce((total: number, lesson: any) => 
                                   total + (lesson.estimatedTime || 0), 0
                                 ) || 0
                               )
@@ -186,7 +185,7 @@ export default function SectionEditor({
                           </Button>
                         </div>
                         <div className="space-y-2">
-                          {section.lessons?.map((lesson, lessonIndex) => (
+                          {section.lessons?.map((lesson: any) => (
                             <div
                               key={lesson.id}
                               className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition-colors"

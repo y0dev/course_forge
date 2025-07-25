@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, FileText, Clock, TrendingUp } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { BookOpen, FileText, Clock } from "lucide-react";
 
 interface StatsOverviewProps {
   totalCourses: number;

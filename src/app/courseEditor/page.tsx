@@ -1,14 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
-import { Course, type Course as CourseType, type Lesson, type Section } from "@/entities/Course";
+import React, { useState, useEffect, Suspense } from "react";
+import { Course, type Lesson, type Section } from "@/entities/Course";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save, Eye, Download, Plus, FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
 import CourseDetailsForm from "@/components/editor/courseDetailsForm";
@@ -18,15 +17,13 @@ import StepBasedLessonPreview from "@/components/editor/StepBasedLessonPreview";
 import LessonTemplateCreator from "@/components/editor/LessonTemplateCreator";
 import CoursePreview from "@/components/editor/coursePreview";
 import ExportDialog from "@/components/editor/exportDialog";
-import { createEndiannessLesson, createSampleLesson } from "@/utils/lessonTemplates";
+import { createEndiannessLesson } from "@/utils/lessonTemplates";
 
 // Type for lessons with sectionId for internal use
 type LessonWithSection = Lesson & { sectionId?: string };
 
-export default function CourseEditor() {
-  const router = useRouter();
+function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useRouter>, toast: ReturnType<typeof useToast>["toast"] }) {
   const searchParams = useSearchParams();
-  const { toast } = useToast();
   const [courseData, setCourseData] = useState<Partial<Course>>({
     title: "",
     slug: "",
@@ -480,5 +477,15 @@ export default function CourseEditor() {
         courseData={courseData}
       />
     </div>
+  );
+}
+
+export default function CourseEditor() {
+  const router = useRouter();
+  const { toast } = useToast();
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CourseEditorContent router={router} toast={toast} />
+    </Suspense>
   );
 }

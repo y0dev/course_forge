@@ -1,13 +1,11 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
   BookOpen, 
   FileText, 
   Download, 
-  Users, 
   Zap, 
   Palette,
   ArrowRight,
@@ -227,7 +225,7 @@ export default function Home() {
                     ))}
                   </div>
                   <p className="text-slate-600 mb-4 italic">
-                    "{testimonial.content}"
+                    &quot;{testimonial.content}&quot;
                   </p>
                   <div>
                     <p className="font-semibold text-slate-900">{testimonial.name}</p>

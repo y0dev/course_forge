@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
   BookOpen, 
-  Clock, 
-  FileText, 
   ChevronRight,
   ChevronDown,
-  User,
-  Calendar
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";

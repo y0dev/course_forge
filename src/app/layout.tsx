@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, FileText, Settings, Plus } from "lucide-react";
+import { BookOpen, FileText, Settings } from "lucide-react";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 

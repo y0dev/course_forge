@@ -1,21 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { Course } from "@/entities/Course";
+import { Course, Lesson, Section } from "@/entities/Course";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
-import { createPageUrl } from "@/utils";
 import { 
   BookOpen, 
   Plus, 
-  FileText, 
-  Clock, 
-  Users, 
-  TrendingUp,
-  Edit3,
-  Download,
   Search
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -25,7 +17,7 @@ import StatsOverview from "@/components/dashboard/statsOverview";
 import CourseCard from "@/components/dashboard/courseCard";
 
 export default function Dashboard() {
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -45,20 +37,20 @@ export default function Dashboard() {
     setIsLoading(false);
   };
 
-  const filteredCourses = courses.filter((course: any) => {
+  const filteredCourses = courses.filter((course: Course) => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          course.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const getTotalLessons = (course: any) => {
-    return course.sections?.reduce((total: number, section: any) => total + (section.lessons?.length || 0), 0) || 0;
+  const getTotalLessons = (course: Course) => {
+    return course.sections?.reduce((total: number, section: Section) => total + (section.lessons?.length || 0), 0) || 0;
   };
 
-  const getEstimatedTime = (course: any) => {
-    return course.sections?.reduce((total: number, section: any) => 
-      total + (section.lessons?.reduce((sectionTotal: number, lesson: any) => 
+  const getEstimatedTime = (course: Course) => {
+    return course.sections?.reduce((total: number, section: Section) => 
+      total + (section.lessons?.reduce((sectionTotal: number, lesson: Lesson) => 
         sectionTotal + (lesson.estimatedTime || 0), 0) || 0), 0) || 0;
   };
 

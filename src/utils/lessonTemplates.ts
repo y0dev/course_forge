@@ -1,4 +1,4 @@
-import { Lesson, LessonStep } from "@/entities/Course";
+import { Lesson } from "@/entities/Course";
 
 export const createEndiannessLesson = (courseTitle: string): Lesson => {
   return {

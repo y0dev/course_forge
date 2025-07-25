@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, FileText, Loader2, Check, Code2, Archive } from "lucide-react";
+import { FileText, Loader2, Check, Code2, Archive } from "lucide-react";
 import { Course } from "@/entities/Course";
 
 interface ExportDialogProps {
@@ -314,12 +314,6 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
     <script>${script}</script>
 </body>
 </html>`;
-  };
-
-  const createZIP = async (files: Array<{name: string, content: string}>) => {
-    // For now, we'll create individual files since ZIP creation requires additional libraries
-    // In a real implementation, you'd use a library like JSZip
-    return files;
   };
 
   const getTemplateScript = () => `

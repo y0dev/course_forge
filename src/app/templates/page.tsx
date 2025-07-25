@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Download, Palette } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const templates = [
   {
@@ -58,10 +59,13 @@ export default function Templates() {
             onClick={() => setSelectedTemplate(template.id)}
             >
               <div className="aspect-video overflow-hidden rounded-t-lg">
-                <img
+                <Image
                   src={template.preview}
                   alt={template.name}
+                  fill
                   className="w-full h-full object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={index === 0}
                 />
               </div>
               <CardHeader>

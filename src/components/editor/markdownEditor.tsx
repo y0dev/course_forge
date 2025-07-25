@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function MarkdownEditor({ selectedLesson, onUpdateLesson }) {
+export default function MarkdownEditor({ selectedLesson, onUpdateLesson }: { selectedLesson: any, onUpdateLesson: (lesson: any) => void }) {
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [estimatedTime, setEstimatedTime] = useState(15);
@@ -43,12 +44,12 @@ export default function MarkdownEditor({ selectedLesson, onUpdateLesson }) {
     }
   };
 
-  const insertMarkdown = (syntax) => {
+  const insertMarkdown = (syntax: string) => {
     const textarea = document.querySelector('textarea[data-markdown-editor]');
     if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
+    const start = (textarea as HTMLTextAreaElement).selectionStart;
+    const end = (textarea as HTMLTextAreaElement).selectionEnd;
     const selectedText = content.substring(start, end);
     
     let newText = "";
@@ -85,8 +86,8 @@ export default function MarkdownEditor({ selectedLesson, onUpdateLesson }) {
     setContent(newContent);
     
     setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + newText.length, start + newText.length);
+      (textarea as HTMLTextAreaElement).focus();
+      (textarea as HTMLTextAreaElement).setSelectionRange(start + newText.length, start + newText.length);
     }, 0);
   };
 
