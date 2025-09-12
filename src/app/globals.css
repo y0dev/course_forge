@@ -16,6 +16,11 @@
   --font-mono: var(--font-geist-mono);
 }
 
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

@@ -218,4 +218,220 @@ function example() {
     ],
     slug: `${title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`
   };
+};
+
+export const createEmbeddedSystemsBasicsCourse = () => {
+  const now = Date.now();
+  let seq = 0;
+  const nextId = () => (now + (seq++)).toString();
+  const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').trim();
+  const minutesFromText = (t: string) => {
+    const m = /([0-9]+)\s*min/i.exec(t);
+    return m ? parseInt(m[1], 10) : 15;
+  };
+  const toStep = (title: string, content: string) => ({ title, content: `<p>${content}</p>` });
+  const makeLesson = (sectionTitle: string, l: { title: string; estimatedTime: string; difficulty: 'Beginner'|'Intermediate'|'Advanced'; progress: number; steps: { title: string; content: string }[]; }) => ({
+    id: nextId(),
+    title: l.title,
+    course: 'Embedded Systems Basics',
+    estimatedTime: minutesFromText(l.estimatedTime),
+    difficulty: l.difficulty,
+    progress: l.progress,
+    steps: l.steps.map(s => toStep(s.title, s.content)),
+    slug: slugify(l.title),
+  });
+
+  const sections = [
+    {
+      title: 'Getting Started with Digital I/O',
+      slug: 'digital-io',
+      lessons: [
+        makeLesson('Getting Started with Digital I/O', {
+          title: 'Blink LED',
+          estimatedTime: '20 min',
+          difficulty: 'Beginner',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'We want the microcontroller to blink an LED repeatedly.' },
+            { title: 'Explore', content: 'Learn about GPIO pins, LED polarity, and resistors.' },
+            { title: 'Prototype', content: 'Connect LED + resistor to a digital pin.' },
+            { title: 'Test', content: 'Turn LED on/off with delays.' },
+            { title: 'Iterate', content: 'Change blink speed.' },
+            { title: 'Reflect', content: 'How does MCU control voltage on a pin?' },
+            { title: 'Recap', content: 'Digital output control basics.' },
+          ],
+        }),
+        makeLesson('Getting Started with Digital I/O', {
+          title: 'Button Input',
+          estimatedTime: '25 min',
+          difficulty: 'Beginner',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Turn an LED on/off with a button.' },
+            { title: 'Explore', content: 'Buttons need pull-up or pull-down resistors.' },
+            { title: 'Prototype', content: 'Connect button to input pin.' },
+            { title: 'Test', content: 'Press → LED on, release → LED off.' },
+            { title: 'Iterate', content: 'Add debounce logic.' },
+            { title: 'Reflect', content: 'Why do buttons bounce?' },
+            { title: 'Recap', content: 'Digital input handling.' },
+          ],
+        }),
+        makeLesson('Getting Started with Digital I/O', {
+          title: 'Multiple LEDs Sequence',
+          estimatedTime: '30 min',
+          difficulty: 'Beginner',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Cycle multiple LEDs like chasing lights.' },
+            { title: 'Explore', content: 'Loops and arrays simplify code.' },
+            { title: 'Prototype', content: 'Wire 3–5 LEDs to pins.' },
+            { title: 'Test', content: 'Run sequence with delay.' },
+            { title: 'Iterate', content: 'Try reverse or faster sequence.' },
+            { title: 'Reflect', content: 'Why use loops instead of writing each LED manually?' },
+            { title: 'Recap', content: 'Efficient control with code.' },
+          ],
+        }),
+      ],
+    },
+    {
+      title: 'Working with Analog Signals',
+      slug: 'analog-signals',
+      lessons: [
+        makeLesson('Working with Analog Signals', {
+          title: 'Potentiometer Input',
+          estimatedTime: '25 min',
+          difficulty: 'Beginner',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Read knob position with ADC.' },
+            { title: 'Explore', content: 'Analog signals → ADC converts to numbers.' },
+            { title: 'Prototype', content: 'Wire potentiometer to ADC pin.' },
+            { title: 'Test', content: 'Print values 0–1023.' },
+            { title: 'Iterate', content: 'Use value to adjust LED blink speed.' },
+            { title: 'Reflect', content: 'Why use ADC vs digital?' },
+            { title: 'Recap', content: 'Analog input basics.' },
+          ],
+        }),
+        makeLesson('Working with Analog Signals', {
+          title: 'PWM Output: LED Brightness',
+          estimatedTime: '25 min',
+          difficulty: 'Beginner',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Fade LED brightness smoothly.' },
+            { title: 'Explore', content: 'PWM controls duty cycle.' },
+            { title: 'Prototype', content: 'Connect LED to PWM pin.' },
+            { title: 'Test', content: 'LED fades in/out.' },
+            { title: 'Iterate', content: 'Map potentiometer → brightness.' },
+            { title: 'Reflect', content: 'PWM vs real analog voltage.' },
+            { title: 'Recap', content: 'PWM lets us dim LEDs.' },
+          ],
+        }),
+        makeLesson('Working with Analog Signals', {
+          title: 'Buzzer Sound',
+          estimatedTime: '20 min',
+          difficulty: 'Beginner',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Play sound with buzzer.' },
+            { title: 'Explore', content: 'Frequency controls pitch.' },
+            { title: 'Prototype', content: 'Wire piezo buzzer to pin.' },
+            { title: 'Test', content: 'Play tone.' },
+            { title: 'Iterate', content: 'Play melody.' },
+            { title: 'Reflect', content: 'Active vs passive buzzer?' },
+            { title: 'Recap', content: 'Sound output control.' },
+          ],
+        }),
+      ],
+    },
+    {
+      title: 'Interacting with the Environment',
+      slug: 'sensors',
+      lessons: [
+        makeLesson('Interacting with the Environment', {
+          title: 'Temperature Sensor',
+          estimatedTime: '25 min',
+          difficulty: 'Intermediate',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Read temperature with sensor (LM35/DHT11).' },
+            { title: 'Explore', content: 'Sensors convert physics → voltage/data.' },
+            { title: 'Prototype', content: 'Wire sensor to ADC/digital interface.' },
+            { title: 'Test', content: 'Print temperature on serial.' },
+            { title: 'Iterate', content: 'LED on if temp > threshold.' },
+            { title: 'Reflect', content: 'Mapping voltage to °C.' },
+            { title: 'Recap', content: 'Sensing environment basics.' },
+          ],
+        }),
+        makeLesson('Interacting with the Environment', {
+          title: 'Light Sensor (LDR)',
+          estimatedTime: '20 min',
+          difficulty: 'Intermediate',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Turn on LED in darkness.' },
+            { title: 'Explore', content: 'LDR resistance changes with light.' },
+            { title: 'Prototype', content: 'Resistor divider to ADC pin.' },
+            { title: 'Test', content: 'Cover/uncover sensor → change values.' },
+            { title: 'Iterate', content: 'Auto LED toggle.' },
+            { title: 'Reflect', content: 'Threshold picking issues.' },
+            { title: 'Recap', content: 'Reactive systems with sensors.' },
+          ],
+        }),
+        makeLesson('Interacting with the Environment', {
+          title: 'Ultrasonic Distance Sensor',
+          estimatedTime: '30 min',
+          difficulty: 'Intermediate',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Measure distance with HC-SR04.' },
+            { title: 'Explore', content: 'Ultrasound timing → distance.' },
+            { title: 'Prototype', content: 'Wire TRIG/ECHO pins.' },
+            { title: 'Test', content: 'Print distance on serial.' },
+            { title: 'Iterate', content: 'Buzzer alarm if <20cm.' },
+            { title: 'Reflect', content: 'Environment effects accuracy.' },
+            { title: 'Recap', content: 'Distance sensing basics.' },
+          ],
+        }),
+      ],
+    },
+    {
+      title: 'Debugging and Communication',
+      slug: 'communication',
+      lessons: [
+        makeLesson('Debugging and Communication', {
+          title: 'UART Serial Debugging',
+          estimatedTime: '25 min',
+          difficulty: 'Intermediate',
+          progress: 0,
+          steps: [
+            { title: 'Define', content: 'Send messages from MCU → PC.' },
+            { title: 'Explore', content: 'UART, baud rate, TX/RX pins.' },
+            { title: 'Prototype', content: 'Connect via USB/Serial.' },
+            { title: 'Test', content: "Print 'Hello from MCU'." },
+            { title: 'Iterate', content: 'Send sensor data.' },
+            { title: 'Reflect', content: 'Why is logging important?' },
+            { title: 'Recap', content: 'Communication foundation.' },
+          ],
+        }),
+      ],
+    },
+  ].map(sec => ({
+    id: nextId(),
+    title: sec.title,
+    slug: slugify(sec.slug || sec.title),
+    lessons: sec.lessons,
+    questions: [],
+  }));
+
+  return {
+    id: nextId(),
+    title: 'Embedded Systems Basics',
+    slug: 'embedded-systems-basics',
+    description: 'A hands-on introduction to embedded systems programming. Learn by building simple but powerful projects with microcontrollers.',
+    category: 'Beginner' as const,
+    estimatedCourseTime: 6,
+    tags: ['embedded', 'microcontrollers', 'electronics', 'arduino'] as string[],
+    sections,
+  };
 }; 

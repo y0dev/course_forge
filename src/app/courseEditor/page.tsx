@@ -18,6 +18,8 @@ import LessonTemplateCreator from "@/components/editor/LessonTemplateCreator";
 import CoursePreview from "@/components/editor/coursePreview";
 import ExportDialog from "@/components/editor/exportDialog";
 import { createEndiannessLesson } from "@/utils/lessonTemplates";
+import { createEmbeddedSystemsBasicsCourse } from "@/utils/lessonTemplates";
+import { generateLessonTemplateHtml, type LessonTemplate } from "@/components/editor/stepTemplates";
 
 // Type for lessons with sectionId for internal use
 type LessonWithSection = Lesson & { sectionId?: string };
@@ -55,7 +57,22 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
     if (draft) {
       try {
         setCourseData(JSON.parse(draft));
+        return;
       } catch {}
+    }
+    // If no draft and no courseId, seed with Embedded Systems Basics
+    if (!courseId) {
+      const defaults = createEmbeddedSystemsBasicsCourse();
+      setCourseData(prev => ({
+        ...prev,
+        ...defaults,
+        tags: [...(defaults.tags || [])], // Convert readonly array to mutable
+      }));
+      localStorage.setItem('course_forge_draft', JSON.stringify({
+        ...courseData,
+        ...defaults,
+        tags: [...(defaults.tags || [])],
+      }));
     }
   }, []);
 
@@ -161,6 +178,35 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
     setShowLessonCreator(true);
   };
 
+  const addLessonWithTemplate = (sectionId: string, template: LessonTemplate) => {
+    const newLesson: Lesson = {
+      id: Date.now().toString(),
+      title: template.title,
+      slug: template.value,
+      course: courseData.id || "draft",
+      content: generateLessonTemplateHtml(template),
+      estimatedTime: 15,
+      difficulty: "Beginner",
+      progress: 0,
+      steps: [] // No steps - this is a complete lesson template
+    };
+
+    // Add the new lesson to the appropriate section
+    setCourseData(prev => ({
+      ...prev,
+      sections: prev.sections?.map(section => 
+        section.id === sectionId 
+          ? { ...section, lessons: [...(section.lessons || []), newLesson] }
+          : section
+      ) || []
+    }));
+
+    toast({
+      title: "Lesson Added",
+      description: `Created "${newLesson.title}" using ${template.label} template.`,
+    });
+  };
+
   const handleLessonCreated = (newLesson: Lesson & { sectionId?: string }) => {
     if (!targetSectionId) {
       console.error("No target section ID for new lesson");
@@ -253,17 +299,34 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   };
 
   const handleExport = async () => {
+    console.log('Export button clicked, courseId:', courseId);
+    console.log('Current courseData:', courseData);
+    
+    // Ensure courseData has an ID for export
+    let exportCourseData = { ...courseData };
+    if (!exportCourseData.id) {
+      exportCourseData.id = Date.now().toString();
+      console.log('Generated course ID for export:', exportCourseData.id);
+    }
+    
     // Refresh course data from localStorage before exporting to ensure we have the latest data
     if (courseId) {
       try {
         const freshCourseData = await Course.getById(courseId);
         if (freshCourseData) {
           setCourseData(freshCourseData);
+          exportCourseData = freshCourseData;
         }
       } catch (error) {
         console.error('Error refreshing course data:', error);
       }
+    } else {
+      // If no courseId, use the current courseData (which might be from draft or default)
+      console.log('No courseId found, using current courseData for export:', exportCourseData);
     }
+    
+    console.log('About to show export dialog, courseData:', exportCourseData);
+    setCourseData(exportCourseData); // Update state with the course data that has an ID
     setShowExportDialog(true);
   };
 
@@ -434,6 +497,7 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
                   onUpdateLesson={updateLesson}
                   onEditLesson={handleLessonEdit}
                   onPreviewLesson={handleLessonPreview}
+                  onAddLessonWithTemplate={addLessonWithTemplate}
                 />
                 {/* Inline lesson editor/preview below the structure */}
                 {editingLesson && (

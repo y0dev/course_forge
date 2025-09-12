@@ -22,6 +22,11 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
   const [isExporting, setIsExporting] = useState(false);
   const [exportComplete, setExportComplete] = useState(false);
   const [exportType, setExportType] = useState("html");
+  const [includeSidebar, setIncludeSidebar] = useState(true);
+  const [theme, setTheme] = useState<'light' | 'dark' | 'compact'>("light");
+
+  // Debug logging
+  console.log('ExportDialog rendered with open:', open, 'courseData:', courseData);
 
   const formatHTMLContent = (content: string) => {
     if (!content) return '';
@@ -334,16 +339,18 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
     });
   `;
 
-  const getTemplateStyles = (template: string) => {
+  const getTemplateStyles = (_template: string) => {
+    const compactScale = theme === 'compact' ? 0.92 : 1;
+    const dark = theme === 'dark';
     const baseStyles = `
-      :root { --primary-color: #1e293b; --secondary-color: #475569; --accent-color: #3b82f6; --bg-color: #f8fafc; --card-bg: #ffffff; --text-color: #334155; --border-color: #e2e8f0; }
+      :root { --primary-color: ${dark ? '#e2e8f0' : '#1e293b'}; --secondary-color: ${dark ? '#94a3b8' : '#475569'}; --accent-color: #06b6d4; --bg-color: ${dark ? '#0f172a' : '#f8fafc'}; --card-bg: ${dark ? '#0b1220' : '#ffffff'}; --text-color: ${dark ? '#e2e8f0' : '#334155'}; --border-color: ${dark ? '#1f2937' : '#e2e8f0'}; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: var(--text-color); background-color: var(--bg-color); transition: background-color 0.3s; animation: fadeIn 0.5s ease-in-out; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: var(--text-color); background-color: var(--bg-color); transition: background-color 0.3s; animation: fadeIn 0.5s ease-in-out; transform: scale(${compactScale}); transform-origin: top left; }
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       .course-layout { display: flex; min-height: 100vh; }
-      .sidebar { width: 320px; background: var(--card-bg); border-right: 1px solid var(--border-color); flex-shrink: 0; position: fixed; height: 100%; }
+      .sidebar { width: 320px; background: var(--card-bg); border-right: 1px solid var(--border-color); flex-shrink: 0; position: fixed; height: 100%; ${includeSidebar ? '' : 'display:none;'} }
       .sidebar-content { padding: 2rem; height: 100%; overflow-y: auto; }
-      .main-content-container { margin-left: 320px; flex: 1; overflow-y: auto; height: 100vh; }
+      .main-content-container { margin-left: ${includeSidebar ? '320px' : '0'}; flex: 1; overflow-y: auto; min-height: 100vh; }
       .main-content { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
 
       .site-title { font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin-bottom: 2rem; }
@@ -351,8 +358,8 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
       .section-title { font-weight: 600; margin: 1.5rem 0 0.5rem 0; color: var(--primary-color); }
       .lesson-list { list-style: none; }
       .lesson-link { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; text-decoration: none; color: var(--secondary-color); border-radius: 0.375rem; transition: all 0.2s; border-left: 3px solid transparent; }
-      .lesson-link:hover { background: #f1f5f9; color: var(--primary-color); }
-      .lesson-link.active { background: #eef2ff; color: var(--accent-color); border-left-color: var(--accent-color); font-weight: 500; }
+      .lesson-link:hover { background: ${dark ? '#0b1220' : '#f1f5f9'}; color: var(--primary-color); }
+      .lesson-link.active { background: ${dark ? '#0b1220' : '#eef2ff'}; color: var(--accent-color); border-left-color: var(--accent-color); font-weight: 500; }
       .lesson-time { font-size: 0.8rem; opacity: 0.7; }
 
       h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; color: var(--primary-color); }
@@ -372,12 +379,11 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
       .stat-item h3 { font-size: 2rem; font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem; }
       .stat-item p { color: var(--secondary-color); font-weight: 500; }
 
-      /* Custom UI Elements */
       .styled-link { color: var(--accent-color); text-decoration: none; font-weight: 500; border-bottom: 1px solid transparent; transition: border-color 0.2s; }
       .styled-link:hover { border-bottom-color: var(--accent-color); }
       
-      .code-block-container { background-color: #282c34; border-radius: 8px; margin: 1.5rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-      .code-block-container header { display: flex; justify-content: space-between; align-items: center; background-color: #21252b; padding: 0.5rem 1rem; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+      .code-block-container { background-color: ${dark ? '#111827' : '#282c34'}; border-radius: 8px; margin: 1.5rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+      .code-block-container header { display: flex; justify-content: space-between; align-items: center; background-color: ${dark ? '#0b1220' : '#21252b'}; padding: 0.5rem 1rem; border-top-left-radius: 8px; border-top-right-radius: 8px; }
       .code-block-container .language { color: #9da5b4; font-size: 0.8rem; text-transform: uppercase; }
       .code-block-container .copy-btn { background-color: #4b5563; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; font-size: 0.8rem; }
       .code-block-container .copy-btn:hover { background-color: #6b7280; }
@@ -386,9 +392,9 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
       .table-container { overflow-x: auto; margin: 1.5rem 0; border: 1px solid var(--border-color); border-radius: 8px; }
       .styled-table { width: 100%; border-collapse: collapse; }
       .styled-table th, .styled-table td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
-      .styled-table th { background-color: #f8fafc; font-weight: 600; }
+      .styled-table th { background-color: ${dark ? '#0b1220' : '#f8fafc'}; font-weight: 600; }
       .styled-table tr:last-child td { border-bottom: none; }
-      .styled-table tr:nth-child(even) { background-color: #f8fafc; }
+      .styled-table tr:nth-child(even) { background-color: ${dark ? '#0b1220' : '#f8fafc'}; }
 
       .image-container { margin: 2rem 0; text-align: center; }
       .image-container img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -400,100 +406,23 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
     return baseStyles;
   };
   
-  const generateSPAHTML = () => {
-    const styles = getTemplateStyles("academic");
-    const script = getTemplateScript();
-    
-    const navigationHTML = courseData.sections?.map(section => `
-      <div class="section">
-        <h3 class="section-title">${section.title || ''}</h3>
-        <ul class="lesson-list">
-          ${section.lessons?.map(lesson => `
-            <li class="lesson-item">
-              <a href="#${lesson.slug || ''}" class="lesson-link">
-                <span>${lesson.title || ''}</span>
-                <span class="lesson-time">${lesson.estimatedTime || 15}m</span>
-              </a>
-            </li>
-          `).join('') || ''}
-        </ul>
-      </div>
-    `).join('') || '';
+  // Helper to load external scripts (e.g., JSZip CDN)
+  const loadScript = (src: string) => new Promise<void>((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve();
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    document.body.appendChild(s);
+  });
 
-    const lessonsContentHTML = courseData.sections?.flatMap(section => 
-        section.lessons?.map(lesson => {
-          let lessonContent = '';
-          
-          if (lesson.steps && lesson.steps.length > 0) {
-            lessonContent = lesson.steps.map((step, index) => `
-              <div class="step-content" id="step-${index + 1}">
-                <h3>Step ${index + 1}: ${step.title || ''}</h3>
-                <div class="step-body">
-                  ${formatHTMLContent(step.content || '')}
-                </div>
-              </div>
-            `).join('');
-          } else {
-            lessonContent = `
-              <div class="lesson-body">
-                ${convertMarkdownToHTML(lesson.content || '')}
-              </div>
-            `;
-          }
-          
-          return `
-            <div id="${lesson.slug || ''}" class="lesson-content-wrapper" style="display:none;">
-              <h1>${lesson.title || ''}</h1>
-              ${lessonContent}
-            </div>
-          `;
-        }) || []
-    ).join('');
-
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="course-title" content="${courseData.title || ''}">
-    <title>${courseData.title || ''}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <style>${styles}</style>
-</head>
-<body>
-    <div class="course-layout">
-        <aside class="sidebar">
-            <div class="sidebar-content">
-                <h2 class="site-title">${courseData.title || ''}</h2>
-                <nav class="course-navigation">
-                    <h3 class="nav-title">Course Content</h3>
-                    <div class="section">
-                        <ul class="lesson-list">
-                            <li><a href="#home" class="lesson-link">Course Home</a></li>
-                        </ul>
-                    </div>
-                    ${navigationHTML}
-                </nav>
-            </div>
-        </aside>
-
-        <div class="main-content-container" id="main-content">
-            <main class="main-content">
-                <div id="course-home" style="display:block;">
-                    <h1>${courseData.title || ''}</h1>
-                    ${courseData.description ? `<p class="course-description">${courseData.description}</p>` : ''}
-                    <h2>Welcome!</h2>
-                    <p>Select a lesson from the sidebar to begin.</p>
-                </div>
-                ${lessonsContentHTML}
-            </main>
-        </div>
-    </div>
-    <script>${script}</script>
-</body>
-</html>`;
-  };
+  // const generateSPAHTML = () => {
+  //   // legacy single-file SPA generator (unused)
+  // };
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -503,7 +432,7 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
       
       if (exportType === "html") {
         // Generate multi-page HTML files
-        const files = [];
+        const files: { name: string; content: string }[] = [];
         
         // Add index.html
         files.push({
@@ -521,21 +450,24 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
           });
         });
         
-        // For now, download the index.html file
-        // In a real implementation, you'd create a ZIP with all files
-        const blob = new Blob([files[0].content], { type: 'text/html' });
+        // Load JSZip from CDN and bundle into a zip
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
+        const win = window as unknown as { JSZip?: new () => { folder: (n: string) => { file: (n: string, c: string) => void }; generateAsync: (opts: { type: 'blob' }) => Promise<Blob> } };
+        const JSZipRef = win.JSZip;
+        if (!JSZipRef) throw new Error('JSZip failed to load');
+        const zip = new JSZipRef();
+        const baseFolder = zip.folder(`${courseData.slug || 'course'}`);
+        files.forEach(f => baseFolder.file(f.name, f.content));
+        
+        const blob = await zip.generateAsync({ type: 'blob' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${courseData.slug || 'course'}.html`;
+        a.download = `${courseData.slug || 'course'}.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        
-        // Show message about multi-page export
-        alert(`Generated ${files.length} HTML files. Currently downloading index.html. For full multi-page export, consider using a ZIP library.`);
-        
       } else {
         // JSON export
         const content = generateJSON();
@@ -574,12 +506,26 @@ export default function ExportDialog({ open, onClose, courseData }: ExportDialog
           <Card>
             <CardContent className="p-4">
               <h3 className="font-semibold mb-2">{courseData.title || "Untitled Course"}</h3>
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex flex-wrap items-center gap-2 mb-3">
                 <Badge>{courseData.category}</Badge>
                 <Badge variant="outline">
                   {courseData.sections?.reduce((total, section) => 
                     total + (section.lessons?.length || 0), 0) || 0} lessons
                 </Badge>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex items-center gap-2">
+                  <input id="includeSidebar" type="checkbox" checked={includeSidebar} onChange={e => setIncludeSidebar(e.target.checked)} />
+                  <label htmlFor="includeSidebar" className="text-sm">Include sidebar</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm">Theme</label>
+                  <select value={theme} onChange={e => setTheme(e.target.value as 'light' | 'dark' | 'compact')} className="border rounded px-2 py-1 text-sm bg-white">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                    <option value="compact">Compact</option>
+                  </select>
+                </div>
               </div>
             </CardContent>
           </Card>

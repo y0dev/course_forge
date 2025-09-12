@@ -22,6 +22,7 @@ import {
 import { useState } from "react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { LESSON_TEMPLATES } from "./stepTemplates";
 
 interface SectionEditorProps {
   sections: any[];
@@ -31,6 +32,7 @@ interface SectionEditorProps {
   onUpdateLesson: (sectionId: string, lessonId: string, updates: any) => void;
   onEditLesson?: (lesson: any, sectionId: string) => void;
   onPreviewLesson?: (lesson: any) => void;
+  onAddLessonWithTemplate?: (sectionId: string, template: any) => void;
 }
 
 export default function SectionEditor({ 
@@ -40,12 +42,14 @@ export default function SectionEditor({
   onSelectLesson,
   onUpdateLesson,
   onEditLesson,
-  onPreviewLesson
+  onPreviewLesson,
+  onAddLessonWithTemplate
 }: SectionEditorProps) {
   const [expandedSections, setExpandedSections] = useState(new Set());
   // Remove quizSectionId and quizDraft, use questionSectionId and questionDraft
   const [questionSectionId, setQuestionSectionId] = useState<string | null>(null);
   const [questionDraft, setQuestionDraft] = useState<any>(null);
+  const [showTemplateSelector, setShowTemplateSelector] = useState<string | null>(null);
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -66,8 +70,23 @@ export default function SectionEditor({
   };
 
   const addLesson = (sectionId: string) => {
-    // This will be handled by the parent component to show the lesson creator
+    // Show template selector instead of directly creating lesson
+    setShowTemplateSelector(sectionId);
+  };
+
+  const handleTemplateSelect = (sectionId: string, template: any) => {
+    if (onAddLessonWithTemplate) {
+      onAddLessonWithTemplate(sectionId, template);
+    } else {
+      // Fallback to regular lesson creation
+      onSelectLesson({ id: 'new', title: 'New Lesson' }, sectionId);
+    }
+    setShowTemplateSelector(null);
+  };
+
+  const addLessonDirectly = (sectionId: string) => {
     onSelectLesson({ id: 'new', title: 'New Lesson' }, sectionId);
+    setShowTemplateSelector(null);
   };
 
   const deleteLesson = (sectionId: string, lessonId: string) => {
@@ -189,15 +208,59 @@ export default function SectionEditor({
                       <div>
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="text-sm font-medium text-slate-700">Lessons</h4>
-                          <Button
-                            size="sm"
-                            onClick={() => addLesson(section.id)}
-                            variant="outline"
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Add Lesson
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => addLesson(section.id)}
+                              variant="outline"
+                            >
+                              <Plus className="w-4 h-4 mr-2" />
+                              Add Lesson
+                            </Button>
+                          </div>
                         </div>
+                        
+                        {/* Template Selector */}
+                        {showTemplateSelector === section.id && (
+                          <div className="mb-4 p-4 border border-blue-200 rounded-lg bg-blue-50">
+                            <h5 className="font-medium text-blue-900 mb-3">Choose a Lesson Template</h5>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                              {LESSON_TEMPLATES.map((template) => (
+                                <button
+                                  key={template.value}
+                                  onClick={() => handleTemplateSelect(section.id, template)}
+                                  className="flex items-center gap-3 p-3 text-left border border-blue-200 rounded-lg bg-white hover:bg-blue-50 transition-colors"
+                                >
+                                  <div className={`w-8 h-8 rounded-full bg-${template.color}-100 flex items-center justify-center`}>
+                                    <span className="text-sm font-medium text-${template.color}-600">
+                                      {template.label.charAt(0)}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <div className="font-medium text-sm text-gray-900">{template.label}</div>
+                                    <div className="text-xs text-gray-600">{template.description}</div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => addLessonDirectly(section.id)}
+                              >
+                                Create Blank Lesson
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setShowTemplateSelector(null)}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                         <div className="space-y-2">
                           {section.lessons?.map((lesson: any) => (
                             <div
