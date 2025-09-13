@@ -1,75 +1,264 @@
 export interface LessonTemplate {
-  value: string;
+  id: string;
   label: string;
   title: string;
   description: string;
   icon: string;
-  color: string;
+    color: string;
+    content: string;
 }
 
 export const LESSON_TEMPLATES: LessonTemplate[] = [
   {
-    value: 'define',
+    id: 'define',
     label: 'Define',
     title: 'Define Learning Objective',
     description: 'Set clear goals and success criteria for what you want to achieve.',
     icon: 'target',
-    color: 'orange'
+    color: 'orange',
+    content: `# Define: [Lesson Topic]
+
+## Learning Objective
+We want to [specific learning goal or skill to achieve].
+
+## What You'll Learn
+- [Key concept 1]
+- [Key concept 2]
+- [Key concept 3]
+`
   },
   {
-    value: 'explore',
+    id: 'explore',
     label: 'Explore',
     title: 'Explore Concepts',
     description: 'Learn about key concepts, terminology, and background knowledge.',
     icon: 'search',
-    color: 'blue'
+    color: 'blue',
+    content: `# Explore: [Topic Fundamentals]
+
+## Key Concepts to Understand
+
+### Concept 1: [Important Topic]
+Learn about [specific concept], including:
+- [Detail 1]
+- [Detail 2]
+- [Detail 3]
+
+### Concept 2: [Related Topic]
+Understanding [another concept] is crucial because:
+- [Reason 1]
+- [Reason 2]
+
+## Background Information
+[Provide context and background information]
+
+## Common Terminology
+- **[Term 1]**: [Definition]
+- **[Term 2]**: [Definition]
+- **[Term 3]**: [Definition]
+
+## Further Reading
+- [Resource 1]
+- [Resource 2]
+- [Documentation link]
+`
   },
   {
-    value: 'prototype',
-    label: 'Prototype',
-    title: 'Build & Create',
-    description: 'Hands-on building and construction with safety guidelines.',
-    icon: 'wrench',
-    color: 'green'
-  },
-  {
-    value: 'test',
+    id: 'test',
     label: 'Test',
     title: 'Test & Validate',
     description: 'Test your creation and validate it works as expected.',
     icon: 'play-circle',
-    color: 'purple'
+    color: 'purple',
+    content: `# Test: [Verify Your Solution]
+
+## Testing Your Implementation
+
+### Basic Functionality Test
+1. [Test step 1]
+2. [Test step 2]
+3. [Test step 3]
+
+### Expected Results
+- ✅ [Expected behavior 1]
+- ✅ [Expected behavior 2]
+- ✅ [Expected behavior 3]
+
+### Verification Checklist
+- [ ] [Check 1]
+- [ ] [Check 2]
+- [ ] [Check 3]
+
+## Debugging Common Issues
+
+### Issue 1: [Problem Description]
+**Symptoms**: [What you see]
+**Solution**: [How to fix it]
+
+### Issue 2: [Problem Description]
+**Symptoms**: [What you see]
+**Solution**: [How to fix it]
+
+## Success Metrics
+Your implementation is working correctly if:
+- [Metric 1]
+- [Metric 2]
+- [Metric 3]
+`
   },
   {
-    value: 'iterate',
+    id: 'iterate',
     label: 'Iterate',
     title: 'Experiment & Improve',
     description: 'Try variations and improvements to enhance your work.',
     icon: 'refresh-cw',
-    color: 'indigo'
+    color: 'indigo',
+    content: `# Iterate: [Enhance Your Solution]
+
+## Improvement Opportunities
+Now that you have a working solution, let's make it better:
+
+### Enhancement 1: [Improvement Area]
+**Current state**: [What you have now]
+**Improvement**: [What to change]
+**Benefit**: [Why this is better]
+
+\`\`\`
+[Code for enhancement 1]
+\`\`\`
+
+### Enhancement 2: [Another Area]
+**Current state**: [What you have now]
+**Improvement**: [What to change]
+**Benefit**: [Why this is better]
+
+\`\`\`
+[Code for enhancement 2]
+\`\`\`
+
+## Advanced Features
+Try implementing these advanced features:
+- [Feature 1] - [Brief description]
+- [Feature 2] - [Brief description]
+- [Feature 3] - [Brief description]
+
+## Performance Optimization
+Consider these optimizations:
+1. [Optimization 1]
+2. [Optimization 2]
+3. [Optimization 3]
+
+## Challenge Yourself
+- Can you [challenge 1]?
+- What if you [challenge 2]?
+- Try to [challenge 3]
+`
   },
   {
-    value: 'reflect',
+    id: 'reflect',
     label: 'Reflect',
     title: 'Think Deeply',
     description: 'Reflect on what you learned and understand the underlying principles.',
     icon: 'brain',
-    color: 'teal'
+    color: 'teal',
+    content: `# Reflect: [Understanding the Why]
+
+## Deep Dive Questions
+
+### Question 1: [Fundamental Question]
+[Prompt for deeper thinking about the topic]
+
+**Consider**: 
+- [Thinking point 1]
+- [Thinking point 2]
+- [Thinking point 3]
+
+### Question 2: [Technical Question]
+[Another question to promote understanding]
+
+**Think about**:
+- [Technical aspect 1]
+- [Technical aspect 2]
+
+## Real-World Applications
+How does this concept apply in real situations?
+
+- **Industry Use Case 1**: [Example]
+- **Industry Use Case 2**: [Example]
+- **Daily Life Example**: [Example]
+
+## Connections to Other Topics
+This lesson connects to:
+- [Related topic 1] - [How it connects]
+- [Related topic 2] - [How it connects]
+- [Related topic 3] - [How it connects]
+
+## Personal Reflection
+Take a moment to think about:
+- What was the most challenging part?
+- What surprised you the most?
+- How will you use this knowledge?
+- What would you explore next?
+`
   },
   {
-    value: 'recap',
+    id: 'recap',
     label: 'Recap',
     title: 'Summarize & Review',
     description: 'Summarize key takeaways and prepare for next steps.',
     icon: 'check-circle',
-    color: 'emerald'
+    color: 'emerald',
+    content: `# Recap: [Lesson Summary]
+
+## What We Accomplished
+In this lesson, we successfully:
+- ✅ [Achievement 1]
+- ✅ [Achievement 2]
+- ✅ [Achievement 3]
+
+## Key Takeaways
+The most important concepts to remember:
+
+### 1. [Key Concept 1]
+[Brief explanation or reminder]
+
+### 2. [Key Concept 2]
+[Brief explanation or reminder]
+
+### 3. [Key Concept 3]
+[Brief explanation or reminder]
+
+## Skills Developed
+You now have the ability to:
+- [Skill 1]
+- [Skill 2]
+- [Skill 3]
+
+## Quick Reference
+For future reference, remember these key points:
+- **[Important Point 1]**: [One-line summary]
+- **[Important Point 2]**: [One-line summary]
+- **[Important Point 3]**: [One-line summary]
+
+## Next Steps
+To continue your learning journey:
+1. [Next step 1]
+2. [Next step 2]
+3. [Next step 3]
+
+## Practice Exercises
+Reinforce your learning with these exercises:
+- [Exercise 1]
+- [Exercise 2]
+- [Exercise 3]
+`
   }
 ];
 
 export function generateLessonTemplateHtml(lessonTemplate: LessonTemplate): string {
   const demoId = `lesson-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   
-  switch (lessonTemplate.value) {
+  switch (lessonTemplate.id) {
     case 'define':
       return generateDefineLesson(demoId, lessonTemplate);
     case 'explore':
