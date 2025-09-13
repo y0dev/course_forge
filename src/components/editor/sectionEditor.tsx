@@ -237,47 +237,6 @@ export default function SectionEditor({
                             </div>
                           </div>
                           
-                          {/* Template Selector */}
-                          {showTemplateSelector === section.id && (
-                            <div className="mb-4 p-4 border border-blue-200 rounded-lg bg-blue-50">
-                              <h5 className="font-medium text-blue-900 mb-3">Choose a Lesson Template</h5>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
-                                {LESSON_TEMPLATES.map((template) => (
-                                  <button
-                                    key={template.id}
-                                    onClick={() => handleTemplateSelect(section.id, template)}
-                                    className="flex items-center gap-3 p-3 text-left border border-blue-200 rounded-lg bg-white hover:bg-blue-50 transition-colors"
-                                  >
-                                    <div className={`w-8 h-8 rounded-full bg-${template.color}-100 flex items-center justify-center`}>
-                                      <span className={`text-sm font-medium text-${template.color}-600`}>
-                                        {template.label.charAt(0)}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <div className="font-medium text-sm text-gray-900">{template.label}</div>
-                                      <div className="text-xs text-gray-600">{template.description}</div>
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => addLessonDirectly(section.id)}
-                                >
-                                  Create Blank Lesson
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => setShowTemplateSelector(null)}
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          )}
                           <div className="space-y-2">
                             {section.lessons?.map((lesson: any) => (
                               <div

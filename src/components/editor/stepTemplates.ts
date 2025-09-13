@@ -1,9 +1,11 @@
+import { Target, Search, Wrench, TestTube, RefreshCw, Brain, CheckCircle, PlayCircle } from "lucide-react";
+
 export interface LessonTemplate {
   id: string;
   label: string;
   title: string;
   description: string;
-  icon: string;
+  icon: React.ElementType;
     color: string;
     content: string;
 }
@@ -14,7 +16,7 @@ export const LESSON_TEMPLATES: LessonTemplate[] = [
     label: 'Define',
     title: 'Define Learning Objective',
     description: 'Set clear goals and success criteria for what you want to achieve.',
-    icon: 'target',
+    icon: Target,
     color: 'orange',
     content: `# Define: [Lesson Topic]
 
@@ -32,7 +34,7 @@ We want to [specific learning goal or skill to achieve].
     label: 'Explore',
     title: 'Explore Concepts',
     description: 'Learn about key concepts, terminology, and background knowledge.',
-    icon: 'search',
+    icon: Search,
     color: 'blue',
     content: `# Explore: [Topic Fundamentals]
 
@@ -68,7 +70,7 @@ Understanding [another concept] is crucial because:
     label: 'Test',
     title: 'Test & Validate',
     description: 'Test your creation and validate it works as expected.',
-    icon: 'play-circle',
+    icon: PlayCircle,
     color: 'purple',
     content: `# Test: [Verify Your Solution]
 
@@ -111,7 +113,7 @@ Your implementation is working correctly if:
     label: 'Iterate',
     title: 'Experiment & Improve',
     description: 'Try variations and improvements to enhance your work.',
-    icon: 'refresh-cw',
+    icon: RefreshCw,
     color: 'indigo',
     content: `# Iterate: [Enhance Your Solution]
 
@@ -159,7 +161,7 @@ Consider these optimizations:
     label: 'Reflect',
     title: 'Think Deeply',
     description: 'Reflect on what you learned and understand the underlying principles.',
-    icon: 'brain',
+    icon: Brain,
     color: 'teal',
     content: `# Reflect: [Understanding the Why]
 
@@ -206,7 +208,7 @@ Take a moment to think about:
     label: 'Recap',
     title: 'Summarize & Review',
     description: 'Summarize key takeaways and prepare for next steps.',
-    icon: 'check-circle',
+    icon: CheckCircle,
     color: 'emerald',
     content: `# Recap: [Lesson Summary]
 
