@@ -719,6 +719,7 @@ function FormattingToolbar({ onFormat }: FormattingToolbarProps) {
 
 interface LessonTemplateCreatorProps {
   courseTitle: string;
+  isTemplate?: boolean;
   onSave: (lesson: Lesson) => void;
   onCancel: () => void;
   initialLesson?: Lesson;
@@ -812,6 +813,7 @@ export default function LessonTemplateCreator({
       const newLesson: Lesson = {
         id: lesson.id || Date.now().toString(),
         title: lesson.title,
+        isTemplate: lesson.isTemplate || false,
         course: lesson.course || courseTitle,
         estimatedTime: lesson.estimatedTime || 15,
         difficulty: lesson.difficulty || "Beginner",
@@ -1232,132 +1234,143 @@ export default function LessonTemplateCreator({
       </Card>
 
       {/* Steps Editor */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Lesson Steps ({lesson.steps?.length || 0})</CardTitle>
-            <Button onClick={addStep} size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Step
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {!lesson.steps || lesson.steps.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500 mb-4">No steps yet. Add your first step to get started!</p>
-              <Button onClick={addStep}>
+      {!initialLesson?.isTemplate ? (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Lesson Steps ({lesson.steps?.length || 0})</CardTitle>
+              <Button onClick={addStep} size="sm">
                 <Plus className="w-4 h-4 mr-2" />
-                Add First Step
+                Add Step
               </Button>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Steps List */}
-              <div className="lg:col-span-1">
-                <h4 className="font-medium text-slate-700 mb-3">Steps</h4>
-                <div className="space-y-2">
-                  {lesson.steps.map((step, index) => (
-                    <div
-                      key={index}
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        activeStepIndex === index
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                      onClick={() => setActiveStepIndex(index)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">
-                            {index + 1}. {step.title}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              moveStep(index, 'up');
-                            }}
-                            disabled={index === 0}
-                          >
-                            <MoveUp className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              moveStep(index, 'down');
-                            }}
-                            disabled={index === lesson.steps!.length - 1}
-                          >
-                            <MoveDown className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteStep(index);
-                            }}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
+          </CardHeader>
+          <CardContent>
+            {!lesson.steps || lesson.steps.length === 0 ? (
+              <div className="text-center py-8">
+                <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                <p className="text-slate-500 mb-4">No steps yet. Add your first step to get started!</p>
+                <Button onClick={addStep}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add First Step
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Steps List */}
+                <div className="lg:col-span-1">
+                  <h4 className="font-medium text-slate-700 mb-3">Steps</h4>
+                  <div className="space-y-2">
+                    {lesson.steps.map((step, index) => (
+                      <div
+                        key={index}
+                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                          activeStepIndex === index
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-slate-200 hover:border-slate-300'
+                        }`}
+                        onClick={() => setActiveStepIndex(index)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">
+                              {index + 1}. {step.title}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveStep(index, 'up');
+                              }}
+                              disabled={index === 0}
+                            >
+                              <MoveUp className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveStep(index, 'down');
+                              }}
+                              disabled={index === lesson.steps!.length - 1}
+                            >
+                              <MoveDown className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteStep(index);
+                              }}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Step Editor */}
+                <div className="lg:col-span-2">
+                  {activeStepIndex >= 0 && activeStepIndex < (lesson.steps?.length || 0) && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium text-slate-700">Step Title</label>
+                        <Input
+                          value={lesson.steps![activeStepIndex].title}
+                          onChange={(e) => updateStep(activeStepIndex, { title: e.target.value })}
+                          placeholder="Enter step title"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-slate-700">Step Content (HTML)</label>
+                        <FormattingToolbar onFormat={handleFormat} />
+                        {/* Formatting logic for HTML content */}
+                        <textarea
+                          ref={textareaRef}
+                          value={lesson.steps![activeStepIndex].content}
+                          onChange={(e) => updateStep(activeStepIndex, { content: e.target.value })}
+                          placeholder="Enter HTML content for this step..."
+                          className="w-full mt-1 p-3 border border-slate-200 rounded-md h-64 font-mono text-sm"
+                        />
+                      </div>
+                      
+                      {/* Content Preview */}
+                      <div>
+                        <label className="text-sm font-medium text-slate-700">Step Preview</label>
+                        <div
+                          className="mt-1 p-4 border border-slate-200 rounded-md bg-white min-h-32 prose prose-slate max-w-none"
+                          dangerouslySetInnerHTML={{
+                            __html: getPreviewHtml(lesson.steps![activeStepIndex].content)
+                          }}
+                        />
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
+            )}
+          </CardContent>
+          </Card>
+        ): (
+          <Card>
+            <CardHeader>
+              <CardTitle>Template Steps</CardTitle>
+            </CardHeader>
+            <CardContent>
 
-              {/* Step Editor */}
-              <div className="lg:col-span-2">
-                {activeStepIndex >= 0 && activeStepIndex < (lesson.steps?.length || 0) && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-slate-700">Step Title</label>
-                      <Input
-                        value={lesson.steps![activeStepIndex].title}
-                        onChange={(e) => updateStep(activeStepIndex, { title: e.target.value })}
-                        placeholder="Enter step title"
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-slate-700">Step Content (HTML)</label>
-                      <FormattingToolbar onFormat={handleFormat} />
-                      {/* Formatting logic for HTML content */}
-                      <textarea
-                        ref={textareaRef}
-                        value={lesson.steps![activeStepIndex].content}
-                        onChange={(e) => updateStep(activeStepIndex, { content: e.target.value })}
-                        placeholder="Enter HTML content for this step..."
-                        className="w-full mt-1 p-3 border border-slate-200 rounded-md h-64 font-mono text-sm"
-                      />
-                    </div>
-                    
-                    {/* Content Preview */}
-                    <div>
-                      <label className="text-sm font-medium text-slate-700">Step Preview</label>
-                      <div
-                        className="mt-1 p-4 border border-slate-200 rounded-md bg-white min-h-32 prose prose-slate max-w-none"
-                        dangerouslySetInnerHTML={{
-                          __html: getPreviewHtml(lesson.steps![activeStepIndex].content)
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        )}
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-3">

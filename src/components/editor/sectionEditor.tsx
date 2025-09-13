@@ -23,8 +23,9 @@ import {
 import { useState } from "react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { LESSON_TEMPLATES, LessonTemplate } from "./stepTemplates";
+import { LessonTemplate } from "./stepTemplates";
 import LessonTemplates from "./LessonTemplates";
+import { debugLog } from "@/lib/utils";
 
 interface SectionEditorProps {
   sections: any[];
@@ -53,7 +54,6 @@ export default function SectionEditor({
   const [currentSectionId, setCurrentSectionId] = useState<string | null>(null);
   const [questionSectionId, setQuestionSectionId] = useState<string | null>(null);
   const [questionDraft, setQuestionDraft] = useState<any>(null);
-  const [showTemplateSelector, setShowTemplateSelector] = useState<string | null>(null);
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -75,28 +75,26 @@ export default function SectionEditor({
 
   const addLesson = (sectionId: string) => {
     // Show template selector instead of directly creating lesson
-    setShowTemplateSelector(sectionId);
     setCurrentSectionId(sectionId);
     setShowTemplates(true);
   };
 
   const handleTemplateSelect = (sectionId: string, template: any) => {
+    debugLog('SectionEditor: handleTemplateSelect', sectionId, template);
     if (onAddLessonWithTemplate) {
       onAddLessonWithTemplate(sectionId, template);
     } else {
       // Fallback to regular lesson creation
+      debugLog('SectionEditor: fallback to regular lesson creation', sectionId, template);
       onSelectLesson({ id: 'new', title: 'New Lesson' }, sectionId);
     }
-    setShowTemplateSelector(null);
+    setShowTemplates(false);
     setCurrentSectionId(null);
   };
 
-  const addLessonDirectly = (sectionId: string) => {
-    onSelectLesson({ id: 'new', title: 'New Lesson' }, sectionId);
-    setShowTemplateSelector(null);
-  };
 
   const deleteLesson = (sectionId: string, lessonId: string) => {
+    debugLog('SectionEditor: deleteLesson', sectionId, lessonId);
     const section = sections.find(s => s.id === sectionId);
     onUpdateSection(sectionId, {
       lessons: section.lessons.filter((lesson: any) => lesson.id !== lessonId)
@@ -104,6 +102,7 @@ export default function SectionEditor({
   };
 
   const formatTime = (minutes: number) => {
+    debugLog('SectionEditor: formatTime', minutes);
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0) {
@@ -113,6 +112,7 @@ export default function SectionEditor({
   };
 
   const getLessonType = (lesson: any) => {
+    debugLog('SectionEditor: getLessonType', lesson);
     if (lesson.steps && lesson.steps.length > 0) {
       return "Step-based";
     }
@@ -122,6 +122,7 @@ export default function SectionEditor({
   // Add this function to handle quiz save
   // Remove handleSaveQuiz, add handleSaveQuestions
   const handleSaveQuestions = (sectionId: string, questions: any[]) => {
+    debugLog('SectionEditor: handleSaveQuestions', sectionId, questions);
     onUpdateSection(sectionId, { questions });
     setQuestionSectionId(null);
     setQuestionDraft(null);
@@ -443,7 +444,7 @@ export default function SectionEditor({
       </div>
 
       <LessonTemplates
-        open={showTemplateSelector !== null}
+        open={showTemplates}
         onClose={() => {
           setShowTemplates(false);
           setCurrentSectionId(null);

@@ -7,6 +7,7 @@ export interface Lesson {
   id: string;
   title: string;
   course: string;
+  isTemplate?: boolean;
   estimatedTime: number;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   progress: number; // 0-100

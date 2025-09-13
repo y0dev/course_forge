@@ -17,9 +17,9 @@ import StepBasedLessonPreview from "@/components/editor/StepBasedLessonPreview";
 import LessonTemplateCreator from "@/components/editor/LessonTemplateCreator";
 import CoursePreview from "@/components/editor/coursePreview";
 import ExportDialog from "@/components/editor/exportDialog";
-import { createEndiannessLesson } from "@/utils/lessonTemplates";
 import { createEmbeddedSystemsBasicsCourse } from "@/utils/lessonTemplates";
 import { generateLessonTemplateHtml, type LessonTemplate } from "@/components/editor/stepTemplates";
+import { debugLog } from "@/lib/utils";
 
 // Type for lessons with sectionId for internal use
 type LessonWithSection = Lesson & { sectionId?: string };
@@ -92,9 +92,12 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
 
   const loadCourse = async () => {
     try {
+      debugLog("Loading course with ID:", courseId);
       const courses = await Course.list();
+      debugLog("Fetched courses:", courses);
       const course = courses.find(c => c.id === courseId);
       if (course) {
+        debugLog("Loaded course:", course);
         setCourseData(course);
       }
     } catch (error) {
@@ -152,6 +155,7 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
       lessons: [],
       questions: [], // Ensure questions array is present
     };
+    debugLog("Adding new section:", newSection);
     setCourseData(prev => ({
       ...prev,
       sections: [...(prev.sections || []), newSection],
@@ -159,6 +163,7 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   };
 
   const updateSection = (sectionId: string, updates: Partial<Section>) => {
+    debugLog("Updating section:", sectionId, updates);
     setCourseData(prev => ({
       ...prev,
       sections: (prev.sections || []).map((section: Section) =>
@@ -168,21 +173,19 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   };
 
   const deleteSection = (sectionId: string) => {
+    debugLog("Deleting section:", sectionId);
     setCourseData(prev => ({
       ...prev,
       sections: (prev.sections || []).filter((section: Section) => section.id !== sectionId)
     }));
   };
 
-  const addLesson = (sectionId: string) => {
-    setShowLessonCreator(true);
-  };
-
   const addLessonWithTemplate = (sectionId: string, template: LessonTemplate) => {
     const newLesson: Lesson = {
       id: Date.now().toString(),
       title: template.title,
-      slug: template.value,
+      slug: template.id,
+      isTemplate: true,
       course: courseData.id || "draft",
       content: generateLessonTemplateHtml(template),
       estimatedTime: 15,
@@ -190,6 +193,7 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
       progress: 0,
       steps: [] // No steps - this is a complete lesson template
     };
+    debugLog("Adding new lesson with template:", newLesson, "to section:", sectionId);
 
     // Add the new lesson to the appropriate section
     setCourseData(prev => ({
@@ -212,7 +216,7 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
       console.error("No target section ID for new lesson");
       return;
     }
-
+    debugLog("New lesson created:", newLesson, "for section:", targetSectionId);
     // Add the new lesson to the appropriate section
     setCourseData(prev => ({
       ...prev,
@@ -237,6 +241,7 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   };
 
   const updateLesson = (sectionId: string, lessonId: string, updates: Partial<Lesson>) => {
+    debugLog("Updating lesson:", lessonId, "in section:", sectionId, updates);
     setCourseData(prev => ({
       ...prev,
       sections: (prev.sections || []).map((section: Section) =>
@@ -266,7 +271,9 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   };
 
   const handleLessonEdit = (lesson: Lesson, sectionId: string) => {
+    debugLog("Editing lesson requested:", lesson, "in section:", sectionId);
     const lessonWithSection = { ...lesson, sectionId };
+    debugLog("Editing lesson:", lessonWithSection);
     setEditingLesson(lessonWithSection);
   };
 
@@ -276,8 +283,12 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   };
 
   const onUpdateLesson = (updates: Partial<Lesson>) => {
+    debugLog("onUpdateLesson called with updates:", updates);
     if (selectedLesson && selectedLesson.sectionId) {
+      debugLog("Updating selected lesson:", selectedLesson.id, "with updates:", updates);
       updateLesson(selectedLesson.sectionId, selectedLesson.id, updates);
+      debugLog("Updated lesson in courseData");
+      // Also update in courseData state to keep in sync
       setCourseData(prev => {
         const updatedSections = (prev.sections || []).map(section => {
           if (section.id === selectedLesson.sectionId) {
@@ -299,21 +310,24 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
   };
 
   const handleExport = async () => {
-    console.log('Export button clicked, courseId:', courseId);
-    console.log('Current courseData:', courseData);
+    debugLog('Export button clicked, courseId:', courseId);
+    debugLog('Current courseData:', courseData);
     
     // Ensure courseData has an ID for export
     let exportCourseData = { ...courseData };
     if (!exportCourseData.id) {
       exportCourseData.id = Date.now().toString();
-      console.log('Generated course ID for export:', exportCourseData.id);
+      debugLog('Generated course ID for export:', exportCourseData.id);
     }
     
     // Refresh course data from localStorage before exporting to ensure we have the latest data
     if (courseId) {
+      debugLog('Refreshing course data from storage for export, courseId:', courseId);
       try {
         const freshCourseData = await Course.getById(courseId);
+        debugLog('Refreshed course data from storage for export:', freshCourseData);
         if (freshCourseData) {
+          debugLog('Refreshed course data from storage for export:', freshCourseData);
           setCourseData(freshCourseData);
           exportCourseData = freshCourseData;
         }
@@ -322,23 +336,12 @@ function CourseEditorContent({ router, toast }: { router: ReturnType<typeof useR
       }
     } else {
       // If no courseId, use the current courseData (which might be from draft or default)
-      console.log('No courseId found, using current courseData for export:', exportCourseData);
+      debugLog('No courseId found, using current courseData for export:', exportCourseData);
     }
     
-    console.log('About to show export dialog, courseData:', exportCourseData);
+    debugLog('About to show export dialog, courseData:', exportCourseData);
     setCourseData(exportCourseData); // Update state with the course data that has an ID
     setShowExportDialog(true);
-  };
-
-  const addSampleLesson = () => {
-    const sampleLesson = createEndiannessLesson(courseData.title || "Course");
-    if (targetSectionId) {
-      // If we're in lesson creation mode, use the target section
-      handleLessonCreated(sampleLesson);
-    } else {
-      // If no target section, show lesson creator
-      setShowLessonCreator(true);
-    }
   };
 
   if (isPreviewMode) {

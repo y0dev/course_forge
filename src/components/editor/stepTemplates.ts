@@ -17,7 +17,7 @@ export const LESSON_TEMPLATES: LessonTemplate[] = [
     title: 'Define Learning Objective',
     description: 'Set clear goals and success criteria for what you want to achieve.',
     icon: Target,
-    color: 'orange',
+    color: 'bg-blue-500',
     content: `# Define: [Lesson Topic]
 
 ## Learning Objective
@@ -35,7 +35,7 @@ We want to [specific learning goal or skill to achieve].
     title: 'Explore Concepts',
     description: 'Learn about key concepts, terminology, and background knowledge.',
     icon: Search,
-    color: 'blue',
+    color: 'bg-green-500',
     content: `# Explore: [Topic Fundamentals]
 
 ## Key Concepts to Understand
@@ -71,7 +71,7 @@ Understanding [another concept] is crucial because:
     title: 'Test & Validate',
     description: 'Test your creation and validate it works as expected.',
     icon: PlayCircle,
-    color: 'purple',
+    color: 'bg-purple-500',
     content: `# Test: [Verify Your Solution]
 
 ## Testing Your Implementation
@@ -114,7 +114,7 @@ Your implementation is working correctly if:
     title: 'Experiment & Improve',
     description: 'Try variations and improvements to enhance your work.',
     icon: RefreshCw,
-    color: 'indigo',
+    color: 'bg-orange-500',
     content: `# Iterate: [Enhance Your Solution]
 
 ## Improvement Opportunities
@@ -162,7 +162,7 @@ Consider these optimizations:
     title: 'Think Deeply',
     description: 'Reflect on what you learned and understand the underlying principles.',
     icon: Brain,
-    color: 'teal',
+    color: 'bg-cyan-500',
     content: `# Reflect: [Understanding the Why]
 
 ## Deep Dive Questions
@@ -209,7 +209,7 @@ Take a moment to think about:
     title: 'Summarize & Review',
     description: 'Summarize key takeaways and prepare for next steps.',
     icon: CheckCircle,
-    color: 'emerald',
+    color: 'bg-emerald-500',
     content: `# Recap: [Lesson Summary]
 
 ## What We Accomplished

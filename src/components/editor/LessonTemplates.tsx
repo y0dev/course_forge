@@ -13,11 +13,12 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { LessonTemplate, LESSON_TEMPLATES } from "./stepTemplates";
+import { debugLog } from "@/lib/utils";
 
 export default function LessonTemplates({ open, onClose, onSelectTemplate }: { open: boolean, onClose: () => void, onSelectTemplate: (template: LessonTemplate) => void }) {
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   const handleSelectTemplate = (template: LessonTemplate) => {
+    debugLog("Selected template:", template);
     onSelectTemplate(template);
     onClose();
   };
@@ -50,7 +51,7 @@ export default function LessonTemplates({ open, onClose, onSelectTemplate }: { o
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-3 mb-2">
                     <div className={`${template.color} p-2 rounded-lg`}>
-                      <template.icon className={`w-5 h-5 text-white ${template.color.replace('bg-', 'text-')}`} />
+                      <template.icon className={`w-5 h-5 text-white bg-blue ${template.color}`} />
                     </div>
                     <CardTitle className="text-lg">{template.title}</CardTitle>
                   </div>
@@ -60,7 +61,7 @@ export default function LessonTemplates({ open, onClose, onSelectTemplate }: { o
                   <div className="space-y-3">
                     <Badge 
                       variant="outline" 
-                      className={`${template.color.replace('bg-', 'border-').replace('500', '200')} ${template.color.replace('bg-', 'text-')}`}
+                      className={`${template.color}`}
                     >
                       {template.title} Phase
                     </Badge>
