@@ -4,6 +4,7 @@ export const createEndiannessLesson = (courseTitle: string): Lesson => {
   return {
     id: Date.now().toString(),
     title: "Understanding Endianness",
+    isTemplate: false,
     course: courseTitle,
     estimatedTime: 15,
     difficulty: "Beginner",
@@ -159,6 +160,7 @@ export const createSampleLesson = (courseTitle: string, title: string): Lesson =
     id: Date.now().toString(),
     title,
     course: courseTitle,
+    isTemplate: false,
     estimatedTime: 15,
     difficulty: "Beginner",
     progress: 0,
@@ -233,6 +235,7 @@ export const createEmbeddedSystemsBasicsCourse = () => {
   const makeLesson = (sectionTitle: string, l: { title: string; estimatedTime: string; difficulty: 'Beginner'|'Intermediate'|'Advanced'; progress: number; steps: { title: string; content: string }[]; }) => ({
     id: nextId(),
     title: l.title,
+    isTemplate: false,
     course: 'Embedded Systems Basics',
     estimatedTime: minutesFromText(l.estimatedTime),
     difficulty: l.difficulty,

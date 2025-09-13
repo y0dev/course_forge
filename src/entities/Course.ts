@@ -7,7 +7,7 @@ export interface Lesson {
   id: string;
   title: string;
   course: string;
-  isTemplate?: boolean;
+  isTemplate: boolean; 
   estimatedTime: number;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   progress: number; // 0-100
@@ -155,6 +155,7 @@ class CourseService {
     return {
       id: Date.now().toString(),
       title: data.title || "New Lesson",
+      isTemplate: data.isTemplate || false,
       course: data.course || "",
       estimatedTime: data.estimatedTime || 15,
       difficulty: data.difficulty || "Beginner",

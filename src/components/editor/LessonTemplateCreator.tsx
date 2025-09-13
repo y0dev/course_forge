@@ -18,6 +18,7 @@ import { Lesson, LessonStep } from "@/entities/Course";
 // FormattingToolbar from StepBasedLessonEditor
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { generateDemoHtml } from "@/components/editor/demoTemplates";
+import { debugLog } from "@/lib/utils";
 
 export const codeListBlocks = [
   {
@@ -769,7 +770,11 @@ export default function LessonTemplateCreator({
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  debugLog("LessonTemplateCreator render:", { lesson, activeStepIndex });
+  debugLog("Initial lesson:", initialLesson);
+
   const updateLesson = (updates: Partial<Lesson>) => {
+    debugLog("Updating lesson:", updates);
     setLesson(prev => ({ ...prev, ...updates }));
   };
 
@@ -1319,6 +1324,7 @@ export default function LessonTemplateCreator({
                 </div>
 
                 {/* Step Editor */}
+                
                 <div className="lg:col-span-2">
                   {activeStepIndex >= 0 && activeStepIndex < (lesson.steps?.length || 0) && (
                     <div className="space-y-4">
@@ -1364,10 +1370,40 @@ export default function LessonTemplateCreator({
         ): (
           <Card>
             <CardHeader>
-              <CardTitle>Template Steps</CardTitle>
+              <CardTitle>Template Content</CardTitle>
+              <p className="text-sm text-slate-500">
+                This lesson is a template. Use the editor below to edit its markdown content.
+              </p>
             </CardHeader>
             <CardContent>
+              <div className="space-y-4">
+                {/* Markdown/Text Editor */}
+                <div>
+                  <label className="text-sm font-medium text-slate-700">
+                    Markdown Content
+                  </label>
+                  <FormattingToolbar onFormat={handleFormat} />
+                  <textarea
+                    value={lesson.content || ""}
+                    onChange={(e) => updateLesson({ ...lesson, content: e.target.value })}
+                    placeholder="Write markdown for this template lesson..."
+                    className="w-full mt-1 p-3 border border-slate-200 rounded-md h-64 font-mono text-sm"
+                  />
+                </div>
 
+                {/* Preview */}
+                <div>
+                  <label className="text-sm font-medium text-slate-700">
+                    Preview
+                  </label>
+                  <div
+                    className="mt-1 p-4 border border-slate-200 rounded-md bg-white min-h-32 prose prose-slate max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: getPreviewHtml(lesson.content || ""),
+                    }}
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
