@@ -1,4 +1,4 @@
-import { Target, Search, Wrench, TestTube, RefreshCw, Brain, CheckCircle, PlayCircle } from "lucide-react";
+import { Target, Search, RefreshCw, Brain, CheckCircle, PlayCircle } from "lucide-react";
 
 export interface LessonTemplate {
   id: string;
@@ -6,8 +6,9 @@ export interface LessonTemplate {
   title: string;
   description: string;
   icon: React.ElementType;
-    color: string;
-    content: string;
+  color: string;
+  mdContent: string;
+  content: string;
 }
 
 export const LESSON_TEMPLATES: LessonTemplate[] = [
@@ -18,7 +19,7 @@ export const LESSON_TEMPLATES: LessonTemplate[] = [
     description: 'Set clear goals and success criteria for what you want to achieve.',
     icon: Target,
     color: 'bg-blue-500',
-    content: `# Define: [Lesson Topic]
+    mdContent: `# Define: [Lesson Topic]
 
 ## Learning Objective
 We want to [specific learning goal or skill to achieve].
@@ -27,7 +28,36 @@ We want to [specific learning goal or skill to achieve].
 - [Key concept 1]
 - [Key concept 2]
 - [Key concept 3]
-`
+`,
+    content: `<div class="flex flex-col space-y-1.5 p-6">
+  <h3 class="text-lg font-semibold leading-none tracking-tight flex items-center gap-2 text-orange-900">
+    <!-- Target Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target w-5 h-5">
+      <circle cx="12" cy="12" r="10"></circle>
+      <circle cx="12" cy="12" r="6"></circle>
+      <circle cx="12" cy="12" r="2"></circle>
+    </svg>
+    Define Learning Objective
+  </h3>
+</div>
+<div class="p-6 pt-4">
+  <div class="bg-white p-4 rounded-lg">
+    <h4 class="font-semibold mb-3">🎯 Learning Objective</h4>
+    <p class="text-gray-700 mb-4">Set clear goals and success criteria for what you want to achieve.</p>
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+      <h5 class="font-semibold text-blue-800 mb-2">What we want to achieve:</h5>
+      <ul class="text-orange-700 space-y-1 list-disc list-inside">
+        <li>Create a clear, measurable goal</li>
+        <li>Understand the expected outcome</li>
+        <li>Set success criteria</li>
+      </ul>
+    </div>
+    <div class="bg-gray-50 p-3 rounded-lg">
+      <h5 class="font-medium mb-2">💡 Pro Tip</h5>
+      <p class="text-sm text-gray-600">Start with the end in mind. A well-defined objective makes the rest of the learning process much clearer!</p>
+    </div>
+  </div>
+</div>`
   },
   {
     id: 'explore',
@@ -36,7 +66,7 @@ We want to [specific learning goal or skill to achieve].
     description: 'Learn about key concepts, terminology, and background knowledge.',
     icon: Search,
     color: 'bg-green-500',
-    content: `# Explore: [Topic Fundamentals]
+    mdContent: `# Explore: [Topic Fundamentals]
 
 ## Key Concepts to Understand
 
@@ -63,7 +93,35 @@ Understanding [another concept] is crucial because:
 - [Resource 1]
 - [Resource 2]
 - [Documentation link]
-`
+`,
+    content: `<div class="flex flex-col space-y-1.5 p-6">
+  <h3 class="text-lg font-semibold leading-none tracking-tight flex items-center gap-2 text-green-900">
+    <!-- Search Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search w-5 h-5">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    Explore Concepts
+  </h3>
+</div>
+<div class="p-6 pt-4">
+  <div class="bg-white p-4 rounded-lg">
+    <h4 class="font-semibold mb-3">🔎 Key Concepts</h4>
+    <p class="text-gray-700 mb-4">Learn about key concepts, terminology, and background knowledge.</p>
+    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+      <h5 class="font-semibold text-green-800 mb-2">Important Topics:</h5>
+      <ul class="text-green-700 space-y-1 list-disc list-inside">
+        <li>Concept 1: Explanation and examples</li>
+        <li>Concept 2: Key reasons and impact</li>
+        <li>Concept 3: Common terms and definitions</li>
+      </ul>
+    </div>
+    <div class="bg-gray-50 p-3 rounded-lg">
+      <h5 class="font-medium mb-2">💡 Tip</h5>
+      <p class="text-sm text-gray-600">Make flashcards or mind maps for new terminology to help you memorize and connect ideas.</p>
+    </div>
+  </div>
+</div>`
   },
   {
     id: 'test',
@@ -72,7 +130,7 @@ Understanding [another concept] is crucial because:
     description: 'Test your creation and validate it works as expected.',
     icon: PlayCircle,
     color: 'bg-purple-500',
-    content: `# Test: [Verify Your Solution]
+    mdContent: `# Test: [Verify Your Solution]
 
 ## Testing Your Implementation
 
@@ -106,7 +164,35 @@ Your implementation is working correctly if:
 - [Metric 1]
 - [Metric 2]
 - [Metric 3]
-`
+`,
+    content: `<div class="flex flex-col space-y-1.5 p-6">
+  <h3 class="text-lg font-semibold leading-none tracking-tight flex items-center gap-2 text-purple-900">
+    <!-- PlayCircle Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play-circle w-5 h-5">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polygon points="10 8 16 12 10 16 10 8"></polygon>
+    </svg>
+    Test & Validate
+  </h3>
+</div>
+<div class="p-6 pt-4">
+  <div class="bg-white p-4 rounded-lg">
+    <h4 class="font-semibold mb-3">🧪 Testing Your Implementation</h4>
+    <p class="text-gray-700 mb-4">Test your creation and validate it works as expected.</p>
+    <div class="bg-purple-50 border-l-4 border-purple-400 p-4 mb-4">
+      <h5 class="font-semibold text-purple-800 mb-2">Verification Checklist:</h5>
+      <ul class="text-purple-700 space-y-1 list-disc list-inside">
+        <li>Run basic functionality tests</li>
+        <li>Confirm expected results</li>
+        <li>Check for edge cases</li>
+      </ul>
+    </div>
+    <div class="bg-gray-50 p-3 rounded-lg">
+      <h5 class="font-medium mb-2">💡 Debug Tip</h5>
+      <p class="text-sm text-gray-600">Use console logs or unit tests to quickly identify and isolate problems.</p>
+    </div>
+  </div>
+</div>`
   },
   {
     id: 'iterate',
@@ -115,7 +201,7 @@ Your implementation is working correctly if:
     description: 'Try variations and improvements to enhance your work.',
     icon: RefreshCw,
     color: 'bg-orange-500',
-    content: `# Iterate: [Enhance Your Solution]
+    mdContent: `# Iterate: [Enhance Your Solution]
 
 ## Improvement Opportunities
 Now that you have a working solution, let's make it better:
@@ -154,7 +240,37 @@ Consider these optimizations:
 - Can you [challenge 1]?
 - What if you [challenge 2]?
 - Try to [challenge 3]
-`
+`,
+    content: `<div class="flex flex-col space-y-1.5 p-6">
+  <h3 class="text-lg font-semibold leading-none tracking-tight flex items-center gap-2 text-orange-900">
+    <!-- RefreshCw Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw w-5 h-5">
+      <polyline points="23 4 23 10 17 10"></polyline>
+      <polyline points="1 20 1 14 7 14"></polyline>
+      <path d="M3.51 9a9 9 0 0114.13-3.36L23 10"></path>
+      <path d="M20.49 15a9 9 0 01-14.13 3.36L1 14"></path>
+    </svg>
+    Experiment & Improve
+  </h3>
+</div>
+<div class="p-6 pt-4">
+  <div class="bg-white p-4 rounded-lg">
+    <h4 class="font-semibold mb-3">⚙️ Improvement Opportunities</h4>
+    <p class="text-gray-700 mb-4">Try variations and improvements to enhance your work.</p>
+    <div class="bg-orange-50 border-l-4 border-orange-400 p-4 mb-4">
+      <h5 class="font-semibold text-orange-800 mb-2">Enhancement Ideas:</h5>
+      <ul class="text-orange-700 space-y-1 list-disc list-inside">
+        <li>Optimize for performance</li>
+        <li>Add advanced features</li>
+        <li>Improve usability</li>
+      </ul>
+    </div>
+    <div class="bg-gray-50 p-3 rounded-lg">
+      <h5 class="font-medium mb-2">💡 Tip</h5>
+      <p class="text-sm text-gray-600">Document your iterations so you can track what improves performance or usability.</p>
+    </div>
+  </div>
+</div>`
   },
   {
     id: 'reflect',
@@ -163,7 +279,7 @@ Consider these optimizations:
     description: 'Reflect on what you learned and understand the underlying principles.',
     icon: Brain,
     color: 'bg-cyan-500',
-    content: `# Reflect: [Understanding the Why]
+    mdContent: `# Reflect: [Understanding the Why]
 
 ## Deep Dive Questions
 
@@ -201,7 +317,35 @@ Take a moment to think about:
 - What surprised you the most?
 - How will you use this knowledge?
 - What would you explore next?
-`
+`,
+    content: `<div class="flex flex-col space-y-1.5 p-6">
+  <h3 class="text-lg font-semibold leading-none tracking-tight flex items-center gap-2 text-cyan-900">
+    <!-- Brain Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brain w-5 h-5">
+      <path d="M15.5 4A4.5 4.5 0 0 0 11 8.5v11A4.5 4.5 0 0 0 15.5 24"></path>
+      <path d="M8.5 4A4.5 4.5 0 0 1 13 8.5v11A4.5 4.5 0 0 1 8.5 24"></path>
+    </svg>
+    Think Deeply
+  </h3>
+</div>
+<div class="p-6 pt-4">
+  <div class="bg-white p-4 rounded-lg">
+    <h4 class="font-semibold mb-3">🧠 Deep Dive Questions</h4>
+    <p class="text-gray-700 mb-4">Reflect on what you learned and understand the underlying principles.</p>
+    <div class="bg-cyan-50 border-l-4 border-cyan-400 p-4 mb-4">
+      <h5 class="font-semibold text-cyan-800 mb-2">Consider:</h5>
+      <ul class="text-cyan-700 space-y-1 list-disc list-inside">
+        <li>Why is this concept important?</li>
+        <li>How does it connect to other topics?</li>
+        <li>Where could it apply in real life?</li>
+      </ul>
+    </div>
+    <div class="bg-gray-50 p-3 rounded-lg">
+      <h5 class="font-medium mb-2">💡 Tip</h5>
+      <p class="text-sm text-gray-600">Write down your answers and insights to deepen retention and understanding.</p>
+    </div>
+  </div>
+</div>`
   },
   {
     id: 'recap',
@@ -210,7 +354,7 @@ Take a moment to think about:
     description: 'Summarize key takeaways and prepare for next steps.',
     icon: CheckCircle,
     color: 'bg-emerald-500',
-    content: `# Recap: [Lesson Summary]
+    mdContent: `# Recap: [Lesson Summary]
 
 ## What We Accomplished
 In this lesson, we successfully:
@@ -253,7 +397,35 @@ Reinforce your learning with these exercises:
 - [Exercise 1]
 - [Exercise 2]
 - [Exercise 3]
-`
+`,
+    content: `<div class="flex flex-col space-y-1.5 p-6">
+  <h3 class="text-lg font-semibold leading-none tracking-tight flex items-center gap-2 text-emerald-900">
+    <!-- CheckCircle Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle w-5 h-5">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    Summarize & Review
+  </h3>
+</div>
+<div class="p-6 pt-4">
+  <div class="bg-white p-4 rounded-lg">
+    <h4 class="font-semibold mb-3">📋 Lesson Summary</h4>
+    <p class="text-gray-700 mb-4">Summarize key takeaways and prepare for next steps.</p>
+    <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4 mb-4">
+      <h5 class="font-semibold text-emerald-800 mb-2">Key Achievements:</h5>
+      <ul class="text-emerald-700 space-y-1 list-disc list-inside">
+        <li>Achievement 1</li>
+        <li>Achievement 2</li>
+        <li>Achievement 3</li>
+      </ul>
+    </div>
+    <div class="bg-gray-50 p-3 rounded-lg">
+      <h5 class="font-medium mb-2">💡 Next Steps</h5>
+      <p class="text-sm text-gray-600">Plan your next activities to build on what you’ve learned.</p>
+    </div>
+  </div>
+</div>`
   }
 ];
 

@@ -726,9 +726,9 @@ interface LessonTemplateCreatorProps {
   initialLesson?: Lesson;
 }
 
-function getPreviewHtml(content: string): string {
+function getPreviewHtml(content: string, isTemplate:boolean): string {
   if (!content) return '';
-  
+  debugLog("Generating preview HTML. isTemplate:", isTemplate);
   // Regex to find the first <h1>, <h2>, or <h3>
   const headerRegex = /<(h[1-3])[^>]*>([\s\S]*?)<\/h[1-3]>/i;
   const match = content.match(headerRegex);
@@ -740,8 +740,15 @@ function getPreviewHtml(content: string): string {
   const headerEnd = headerStart + match[0].length;
   
   // Create the styled header with book icon
-  const styledHeader = `<div class="flex flex-col space-y-1.5 p-6"><h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2"><div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4 text-blue-600" aria-hidden="true"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></div>${headerText}</h3></div>`;
-  
+  // const styledHeader = `<div class="flex flex-col space-y-1.5 p-6"><h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2"><div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4 text-blue-600" aria-hidden="true"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></div>${headerText}</h3></div>`;
+  let styledHeader;
+  if (isTemplate) {
+    styledHeader = `<div class="flex flex-col space-y-1.5 p-6"><h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2">${headerText}</h3></div>`;
+  } else {
+    debugLog("Header text:", headerText);
+    styledHeader = `<div class="flex flex-col space-y-1.5 p-6"><h3 class="text-lg font-semibold leading-none tracking-tight text-[var(--primary)] flex items-center gap-2"><div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4 text-blue-600" aria-hidden="true"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></div>${headerText}</h3></div>`;
+  }
+
   // Split content into before header, header, and after header
   const beforeHeader = content.slice(0, headerStart);
   const afterHeader = content.slice(headerEnd);
@@ -762,6 +769,7 @@ export default function LessonTemplateCreator({
   const [lesson, setLesson] = useState<Partial<Lesson>>(initialLesson || {
     title: "",
     course: courseTitle,
+    isTemplate: false,
     estimatedTime: 15,
     difficulty: "Beginner",
     progress: 0,
@@ -1182,7 +1190,7 @@ export default function LessonTemplateCreator({
       }
     }, 0);
   }
-
+  
   return (
     <div className="space-y-6">
       {/* Lesson Header */}
@@ -1356,7 +1364,7 @@ export default function LessonTemplateCreator({
                         <div
                           className="mt-1 p-4 border border-slate-200 rounded-md bg-white min-h-32 prose prose-slate max-w-none"
                           dangerouslySetInnerHTML={{
-                            __html: getPreviewHtml(lesson.steps![activeStepIndex].content)
+                            __html: getPreviewHtml(lesson.steps![activeStepIndex].content, lesson.isTemplate || false)
                           }}
                         />
                       </div>
@@ -1399,7 +1407,7 @@ export default function LessonTemplateCreator({
                   <div
                     className="mt-1 p-4 border border-slate-200 rounded-md bg-white min-h-32 prose prose-slate max-w-none"
                     dangerouslySetInnerHTML={{
-                      __html: getPreviewHtml(lesson.content || ""),
+                      __html: getPreviewHtml(lesson.content || "", lesson.isTemplate || true),
                     }}
                   />
                 </div>
